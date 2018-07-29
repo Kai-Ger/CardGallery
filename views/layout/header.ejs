@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PostCards</title>
+        <link rel="stylesheet" href="/stylesheets/main.css">
+        <!-- Make site responsive on mobile/tablet -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+      <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <!-- Brand/logo -->
+        <a class="navbar-brand" href="/">PostCards</a>
+        
+        <!-- Hamburger button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link <%= typeof page !== 'undefined' && page === 'cards' ? 'active' : '' %>"  href="/cards">Home</a>
+              </li>
+              <li class="nav-item">            
+                <form action="/cards" method="GET" class="form-inline ">
+                        <input type="text" name="search" placeholder="Find card" class="form-control-sm mr-sm-2">
+                        <input type="submit" value="Search" class="btn btn-sm btn-outline-secondary my-2 my-sm-0">  
+                </form>
+              </li>
+          </ul>
+        
+          <ul class="navbar-nav ml-auto">
+            <% if(!currentUser){ %>
+              <li class="nav-item">
+                <a class="nav-link <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>" href="/login">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>" href="/register">Register</a>
+              </li>
+            <% } else { %>
+              <% if (currentUser.isAdmin) { %>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Admin <%= currentUser.username %></a>
+                </li>
+                <% } else { %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#"><%= currentUser.username %></a>
+                  </li>  
+                <% } %>  
+                <li class="nav-item">
+                  <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            <% } %>
+          </ul>
+        </div>
+      </nav> 
+  
+  
+      
+<div class="container" style="margin-top: 60px">
+  <% if(error && error.length > 0){ %>
+    <div class="alert alert-danger" role="alert">
+      <%= error %>
+    </div>
+  <% } %>
+  <% if(info && info.length > 0){ %>
+    <div class="alert alert-info" role="alert">
+      <%= info %>
+    </div>
+  <% } %>
+    <% if(success && success.length > 0){ %>
+    <div class="alert alert-success" role="alert">
+      <%= success %>
+    </div>
+  <% } %>
+</div>
