@@ -7,7 +7,21 @@ var cardSchema = new mongoose.Schema({
         url: String,
         public_id: String
     },
-    description: String
+    description: String,
+    amount: Number,
+    comments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Comment"
+      }
+   ],
+    author: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    }
 });
 
 module.exports = mongoose.model("Card", cardSchema);

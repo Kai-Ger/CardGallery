@@ -1,0 +1,16 @@
+body {
+    background-color: #000;
+    background-image: url(https://images.pexels.com/photos/190339/pexels-photo-190339.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940)
+}
+
+#landing-header {
+    z-index: 1;
+    position: relative;
+    text-align: center;
+    padding-top: 40vh;
+}
+
+#landing-header h1 {
+    color: #000;
+    text-shadow: 1px 1px 2px white, 0 0 1em white, 0 0 0.2em green;
+}

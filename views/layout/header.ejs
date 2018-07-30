@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
+        <!-- Bootstrap JS CDN -->
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> 
+        <link rel="stylesheet" href="/stylesheets/main.css">
+    
     <head>
         <title>PostCards</title>
-        <link rel="stylesheet" href="/stylesheets/main.css">
         <!-- Make site responsive on mobile/tablet -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
@@ -41,11 +44,20 @@
             <% } else { %>
               <% if (currentUser.isAdmin) { %>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Admin <%= currentUser.username %></a>
+                  <a class="nav-link disabled" href="#"><%= currentUser.username %></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/admin/new">Add Card</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Users</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Report</a>
                 </li>
                 <% } else { %>
                   <li class="nav-item">
-                    <a class="nav-link" href="#"><%= currentUser.username %></a>
+                    <a class="nav-link disabled" href="#"><%= currentUser.username %></a>
                   </li>  
                 <% } %>  
                 <li class="nav-item">

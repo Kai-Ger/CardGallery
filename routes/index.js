@@ -6,6 +6,8 @@ var crypto = require("crypto");
 var passport = require("passport");
 var async = require("async");
 
+var config = require("../../config"); //temporary
+
 // HOME PAGE
 router.get("/", function(request, response) {
     response.render("landing");
@@ -41,7 +43,7 @@ router.get("/login", function(request, response) {
 
 // LOGIN - Handle login
 router.post("/login", passport.authenticate("local", {
-    successRedirect: "/campgrounds",
+    successRedirect: "/cards",
     successFlash: "Welcome back!",
     failureRedirect: "/login",
     failureFlash: "Please submit a valid username and password"
@@ -54,7 +56,7 @@ router.post("/login", passport.authenticate("local", {
 router.get("/logout", function(request, response) {
     request.logout();
     request.flash("info", "No user is logged");
-    response.redirect("/campgrounds");
+    response.redirect("/cards");
 });
 
 // FORGOT - Display forgot password form
@@ -99,9 +101,9 @@ router.post("/forgot", function(request, response, next) {
             var mailOptions = {
                 to: user.email,
                 from: "yuuyuuuki@gmail.com",
-                subject: "Reset your YelpCamp password",
+                subject: "Reset your password",
                 text: "Dear " + user.username + "\n\n" +
-                    "You recently asked to reset your YelpCamp password. To complete your request, please follow this link:\n\n " +
+                    "You recently asked to reset your password. To complete your request, please follow this link:\n\n " +
                     "http://" + request.headers.host + "/reset/" + token + "\n\n" +
                     "If you did not request this change, please ignore this email and your password will remail unchanged.\n"
             };
@@ -172,7 +174,7 @@ router.post("/reset/:token", function(request, response) {
             var mailOptions = {
                 to: user.email,
                 from: "yuuyuuuki@gmail.com",
-                subject: "Your YelpCamp password has been changed",
+                subject: "Your password has been changed",
                 text: "Dear " + user.username + "\n\n" +
                     "This is a confirmation that the password for your account " + user.email + " has just been changed.\n"
             };

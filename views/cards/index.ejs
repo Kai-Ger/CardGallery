@@ -1,0 +1,71 @@
+<% include ../layout/header %>
+<div class="container">
+    <header class="jumbotron" >
+        <div class="container">
+            <h1>Postcards</h1>
+            <p>Best Postcards from all over Israel and beyond</p>
+        </div>
+    </header>
+    <div class="row text-center" style="display:flex; flex-wrap: wrap;">
+        <% if (noMatch) { %>
+            <div class="col-md-12">
+                <h3>No cards match your search. Please try again.</h3>
+            </div>
+        <% } %>
+        <% cards.forEach(function(card){ %>
+            <div class="col-md-3 col-sm-6">
+                <div class="img-thumbnail"> 
+                    <a href="/cards/<%= card._id %>"><img class="img-fluid" src="<%= card.image.url %>"></a>
+                    <div class="caption">
+                        <h4><%= card.name %></h4>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+    <div class="row justify-content-center">
+    <% if (pages && pages > 0) { %>
+    <ul class="pagination justify-content-center" style="margin:20px 0">
+        <% if (current == 1) { %>
+        <li class="page-item disabled"><a class="page-link">First</a></li>
+        <% } else { %>
+        <li class="page-item"><a class="page-link" href="/cards">First</a></li>
+        <% } %>
+ 
+        <% if (current == 1) { %>
+        <li class="page-item disabled"><a class="page-link"> « </a></li>
+        <% } else { %>
+        <li class="page-item"><a class="page-link" href="/cards?page=<%= Number(current) - 1 %>">«</a></li>
+        <% } %>
+ 
+        <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+        <% if (i !== 1) { %>
+        <li class="page-item "><a class="page-link">...</a></li>
+        <% } %>
+        <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+        <% if (i == current) { %>
+        <li class="page-item active"><a class="page-link"><%= i %></a></li>
+        <% } else { %>
+        <li class="page-item"><a class="page-link" href="/cards?page=<%= i %>"><%= i %></a></li>
+        <% } %>
+        <% if (i == Number(current) + 4 && i < pages) { %>
+        <li class="page-item disabled"><a class="page-link">...</a></li>
+        <% } %>
+        <% } %>
+ 
+        <% if (current == pages) { %>
+        <li class="page-item disabled"><a class="page-link"> » </a></li>
+        <% } else { %>
+        <li class="page-item"><a class="page-link" href="/cards?page=<%= Number(current) + 1 %>">»</a></li>
+        <% } %>
+ 
+        <% if (current == pages) { %>
+        <li class="page-item disabled"><a class="page-link">Last</a></li>
+        <% } else { %>
+        <li class="page-item"><a class="page-link" href="/cards?page=<%= pages %>">Last</a></li>
+        <% } %>
+    </ul>
+    <% } %>
+</div>
+</div>
+<% include ../layout/footer %>

@@ -10,6 +10,7 @@ var express = require("express"),
 
 //  requiring routes
 var cardRoutes = require("./routes/cards"),
+    adminRoutes = require("./routes/admin_routes"),
     authRoutes = require("./routes/index");
 
 mongoose.connect("mongodb://localhost:27017/cards", { useNewUrlParser: true });
@@ -42,7 +43,8 @@ app.use(function(request, response, next) {
 
 // use routes
 app.use(authRoutes);
-//app.use("/cards", cardRoutes);
+app.use("/cards", cardRoutes);
+app.use("/admin", adminRoutes);
 
 // 404 error handling
 app.use(function(request, response, next) {

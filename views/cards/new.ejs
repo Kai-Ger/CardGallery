@@ -1,0 +1,27 @@
+<% include ../layout/header %>
+
+<div class="container">
+    <h1 style="text-align: center; margin-top: 10px">Create new Card</h1>
+    <div style="width: 30%; margin: 30px auto;">
+        <form action="/admin" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="name" name="card[name]" required>
+            </div>
+            <div class="form-group">
+                <input type="number" class="form-control" placeholder="amount" name="card[amount]" min="1" step="1">
+            </div>
+            <div class="form-group">
+                <label for="image">Image</label>
+                <input type="file" id-"image" name="image" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="description" name="card[description]">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary btn-block">Submit!</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% include ../layout/footer %>
