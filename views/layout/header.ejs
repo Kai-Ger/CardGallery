@@ -27,8 +27,8 @@
               </li>
               <li class="nav-item">            
                 <form action="/cards" method="GET" class="form-inline ">
-                        <input type="text" name="search" placeholder="Find card" class="form-control-sm mr-sm-2">
-                        <input type="submit" value="Search" class="btn btn-sm btn-outline-secondary my-2 my-sm-0">  
+                  <input type="text" name="search" placeholder="Find card" class="form-control-sm mr-sm-2">
+                  <input type="submit" value="Search" class="btn btn-sm btn-outline-secondary my-2 my-sm-0">  
                 </form>
               </li>
           </ul>
@@ -44,20 +44,17 @@
             <% } else { %>
               <% if (currentUser.isAdmin) { %>
                 <li class="nav-item">
-                  <a class="nav-link disabled" href="#"><%= currentUser.username %></a>
+                  <a class="nav-link" href="users/<%= currentUser.id %>"><%= currentUser.username %></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/admin/new">Add Card</a>
+                  <a class="nav-link" href="/cards/new">Add Card</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Users</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Report</a>
+                  <a class="nav-link" href="/users">Users</a>
                 </li>
                 <% } else { %>
                   <li class="nav-item">
-                    <a class="nav-link disabled" href="#"><%= currentUser.username %></a>
+                    <a class="nav-link" href="users/<%= currentUser.id %>"><%= currentUser.username %></a>
                   </li>  
                 <% } %>  
                 <li class="nav-item">

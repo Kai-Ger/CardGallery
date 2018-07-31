@@ -1,0 +1,28 @@
+<% include ../layout/header %>
+
+<div class="container">
+    <h1><%= user.username %></h1>
+    <p><a href="mailto:<%= user.email %>"><%= user.email %></a></p>
+    <p><%= user.introduction %></p>
+    <h4>Wishlist</h4>
+    <% if(user.wishesCount > 0){ %>
+        <% user.wishes.forEach(function(wish) { %>
+        <li>
+            <p><%= wish.name %></p>
+            <form id="delete-form" action="/users/<%= user._id %>/wishes/<%= wishes._id %>?_method=DELETE" method="POST" style="display: inline;">
+                <button class="btn btn-sm btn-danger">Delete</button>
+            </form>
+        <% }); %>    
+        </li>
+    <% } else { %>
+        <p>No cards at the moment</p>
+    <% } %>
+    <a class="btn btn-outline-info" href="/users/<%= user._id %>/edit">Edit user profile</a>
+    <% if (currentUser && currentUser.isAdmin) { %>
+        <form id="delete-form" action="/users/<%= user._id %>?_method=DELETE" method="POST" style="display: inline;">
+            <button class="btn btn-sm btn-outline-danger">Delete user</button>
+        </form>
+    <% } %>
+</div>
+
+<% include ../layout/footer %>

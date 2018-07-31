@@ -6,9 +6,19 @@ var UserSchema = new mongoose.Schema({
     username: { type: String, unique: true, require: true },
     email: { type: String, unique: true, require: true },
     password: String,
+    introduction: String,
     resetPassToken: String,
     resetPassExpires: Date,
-    isAdmin: { type: Boolean, default: false }
+    isAdmin: { type: Boolean, default: false },
+    wishesCount: { type: Number, default: 0 },
+    wishes: [
+        {
+            id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Card"
+            }
+        }
+    ]
 });
 
 UserSchema.plugin(passportLocalMongoose);

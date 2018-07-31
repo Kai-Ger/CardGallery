@@ -1,3 +1,16 @@
 .navbar-dark .navbar-nav .nav-link.disabled {
     color: #fff;
 }
+
+.table-row {
+    cursor: pointer;
+}
+
+#admin_controls * {
+    margin: 0 5px 0;
+}
+
+
+.collapse.in {
+    display: block;
+}

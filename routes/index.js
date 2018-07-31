@@ -23,7 +23,8 @@ router.get("/register", function(request, response) {
 router.post("/register", function(request, response) {
     var newUser = new User({
         username: request.body.username,
-        email: request.body.email
+        email: request.body.email,
+        introduction: request.body.introduction
     });
     User.register(newUser, request.body.password, function(err, user) {
         if (err) {
