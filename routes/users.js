@@ -3,6 +3,7 @@ var router = express.Router();
 var Card = require("../models/card");
 var User = require("../models/user");
 var middleware = require("../middleware");
+var nodemailer = require("nodemailer");
 var multer = require("multer");
 var mongoose = require("mongoose");
 var async = require("async");
@@ -96,6 +97,51 @@ router.put("/:id", function(request, response) {
     }
 });
 
+// Confirm sending the card to user
+router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request, response) {
+    async.series([
+        function(callback) {
+            // Reduce amount of cards in stock
+            Card.findByIdAndUpdate(request.params.card_id, { $inc: { amount: -1 } }, function(err, card) {
+                console.log(err);
+                console.log("request.params.card_id " + request.params.card_id);
+                console.log("Amount of cards was reduced for " + card.name);
+                callback(err);
+            });
+        },
+        function(callback) {
+            // Send confirmation email to the user
+            User.findById(request.params.id, function(err, user) {
+                var transporter = nodemailer.createTransport({
+                    service: "Gmail",
+                    host: 'smtp.gmail.com',
+                    auth: {
+                        type: "login", // default
+                        user: "yuuyuuuki@gmail.com",
+                        pass: "yukonpass123"
+                        //  pass: process.env.GMAILPW
+                    }
+                });
+                var mailOptions = {
+                    to: user.email,
+                    from: "yuuyuuuki@gmail.com",
+                    subject: "Your wish came true",
+                    text: "Dear " + user.username + "\n\n" +
+                        "The card you wished for is on its way to you.\n"
+                };
+                transporter.sendMail(mailOptions, function(err) {
+                    console.log("confirmation email sent");
+                    request.flash("success", "Confirmation email was sent to user " + user.email);
+                });
+                callback(err);
+            });
+        }
+        // Remove this card from wishlist
+    ], function(err, results) {
+        response.redirect("/users/" + request.params.id);
+    });
+});
+
 // DELETE card from wishlist
 router.delete("/:id/wishes/:card_id", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
@@ -109,7 +155,6 @@ router.delete("/:id/wishes/:card_id", function(request, response) {
                 user.save();
                 request.flash("info", "Your wish was removed successfully");
                 response.redirect("/users/" + request.params.id);
-
             }
         });
     }

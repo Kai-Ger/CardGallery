@@ -44,7 +44,7 @@
             <% } else { %>
               <% if (currentUser.isAdmin) { %>
                 <li class="nav-item">
-                  <a class="nav-link" href="users/<%= currentUser.id %>"><%= currentUser.username %></a>
+                  <a class="nav-link" href="/users/<%= currentUser.id %>"><%= currentUser.username %></a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="/cards/new">Add Card</a>
@@ -54,7 +54,7 @@
                 </li>
                 <% } else { %>
                   <li class="nav-item">
-                    <a class="nav-link" href="users/<%= currentUser.id %>"><%= currentUser.username %></a>
+                    <a class="nav-link" href="/users/<%= currentUser.id %>"><%= currentUser.username %></a>
                   </li>  
                 <% } %>  
                 <li class="nav-item">

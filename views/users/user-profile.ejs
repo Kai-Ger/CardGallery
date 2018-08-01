@@ -10,9 +10,17 @@
             <% user.wishes.forEach(function(wish) { %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <a href="/cards/<%= wish._id %>"><%= wish.name %></a>
+                <div class="btn-group" >
+                <% if (currentUser && currentUser.isAdmin) { %>
+                    <h4><span class="badge badge-secondary" ><%= wish.amount %> cards left</span></h4>
+                    <form action="/users/<%= user._id %>/sent/<%= wish._id %>" method="POST">
+                        <button class="btn btn-sm btn-primary" style="margin: 0 5px 0;">Card sent</button>
+                    </form>
+                <% } %>
                 <form action="/users/<%= user._id %>/wishes/<%= wish._id %>?_method=DELETE" method="POST" style="display: inline;">
                     <button class="btn btn-sm btn-danger">Delete</button>
                 </form>
+                </div>
             <% }); %>    
             </li>
         </ul>
