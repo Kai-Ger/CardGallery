@@ -7,7 +7,9 @@
          <div class="card-body">
             <h4><%= card.name %></h4>
             <p><%= card.description %></p>
-            <a class="btn btn-outline-secondary float-right" href="/cards/<%= card._id %>/wish">Add to Wishlist</a>
+            <form action="/cards/<%= card._id %>/wish" method="POST">
+               <button class="btn btn-outline-secondary float-right" >Add to Wishlist</button>
+            </form>
             <% if(currentUser && currentUser.isAdmin){ %>
             <div id="admin_controls" class="form-inline">
                <h3><span class="badge badge-secondary" ><%= card.amount %> cards left</span></h3>

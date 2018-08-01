@@ -2,9 +2,9 @@ var express = require("express");
 var router = express.Router();
 var Card = require("../models/card");
 var User = require("../models/user");
-var Comment = require("../models/comment");
 var middleware = require("../middleware");
 var multer = require("multer");
+var mongoose = require("mongoose");
 var async = require("async");
 var config = require("../../config"); // temporary
 var storage = multer.diskStorage({
@@ -53,7 +53,7 @@ router.get("/", middleware.adminPermissions, function(request, response) {
 // USER PROFILE
 router.get("/:id", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
-        User.findById(request.params.id, function(err, foundUser) {
+        User.findById(request.params.id).populate("wishes").exec(function(err, foundUser) {
             if (err) {
                 console.log(err);
                 request.flash("error", "User not found");
@@ -65,7 +65,6 @@ router.get("/:id", function(request, response) {
         });
     }
 });
-
 
 // EDIT USER
 router.get("/:id/edit", function(request, response) {
@@ -97,6 +96,24 @@ router.put("/:id", function(request, response) {
     }
 });
 
+// DELETE card from wishlist
+router.delete("/:id/wishes/:card_id", function(request, response) {
+    if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
+        var cardID = mongoose.mongo.ObjectID(request.params.card_id);
+        User.findByIdAndUpdate(request.params.id, { $pull: { "wishes": cardID } }, function(err, user) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                user.wishesCount = user.wishesCount - 1;
+                user.save();
+                request.flash("info", "Your wish was removed successfully");
+                response.redirect("/users/" + request.params.id);
+
+            }
+        });
+    }
+});
 
 // DELETE USER
 router.delete("/:id", middleware.adminPermissions, function(request, response) {
@@ -112,6 +129,9 @@ router.delete("/:id", middleware.adminPermissions, function(request, response) {
         }
     });
 });
+
+
+
 
 
 module.exports = router;

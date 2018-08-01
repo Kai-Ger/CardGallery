@@ -13,10 +13,10 @@ var UserSchema = new mongoose.Schema({
     wishesCount: { type: Number, default: 0 },
     wishes: [
         {
-            id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Card"
-            }
+
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Card"
+
         }
     ]
 });

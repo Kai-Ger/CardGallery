@@ -14,12 +14,14 @@
         <% } %>
         <% cards.forEach(function(card){ %>
             <div class="col-md-3 col-sm-6">
-                <div class="img-thumbnail"> 
-                    <a href="/cards/<%= card._id %>"><img class="img-fluid" src="<%= card.image.url %>"></a>
-                    <div class="caption">
-                        <h4><%= card.name %></h4>
+                <a href="/cards/<%= card._id %>">
+                    <div class="img-thumbnail"> 
+                        <img class="img-fluid" src="<%= card.image.url %>">
+                        <div class="caption">
+                            <h4><%= card.name %></h4>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         <% }); %>
     </div>

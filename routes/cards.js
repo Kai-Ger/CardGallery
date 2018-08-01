@@ -3,8 +3,10 @@ var router = express.Router();
 var multer = require("multer");
 var async = require("async");
 var Card = require("../models/card");
+var User = require("../models/user");
 var Comment = require("../models/comment");
 var middleware = require("../middleware");
+var mongoose = require("mongoose");
 var config = require("../../config"); // temporary
 var storage = multer.diskStorage({
     filename: function(request, file, callback) {
@@ -135,6 +137,30 @@ router.get("/:id/edit", middleware.adminPermissions, function(request, response)
         }
         response.render("cards/edit", { card: foundCard });
 
+    });
+});
+
+
+// ADD CARD to wishlist
+router.post("/:card_id/wish", middleware.isLoggedIn, function(request, response) {
+    User.findById(request.user._id, function(err, user) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            Card.findById(request.params.card_id, function(err, card) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    user.wishes.push(card);
+                    user.wishesCount = user.wishesCount + 1;
+                    user.save();
+                    request.flash("info", "Your wish was added successfully");
+                    response.redirect("/cards/" + card._id);
+                }
+            });
+        }
     });
 });
 
