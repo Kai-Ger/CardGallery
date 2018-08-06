@@ -27,8 +27,12 @@
               </li>
               <li class="nav-item">            
                 <form action="/cards" method="GET" class="form-inline ">
-                  <input type="text" name="search" placeholder="Find card" class="form-control-sm mr-sm-2">
-                  <input type="submit" value="Search" class="btn btn-sm btn-outline-secondary my-2 my-sm-0">  
+                  <% if (typeof search === "undefined" || !search ) { %> 
+                    <input type="text" name="search" placeholder="Find card" class="form-control-sm mr-sm-2">
+                  <% } else { %>
+                    <input type="text" name="search" value="<%= search %>" class="form-control-sm mr-sm-2">
+                  <% } %> 
+                    <input type="submit" value="Search" class="btn btn-sm btn-outline-secondary my-2 my-sm-0"> 
                 </form>
               </li>
           </ul>

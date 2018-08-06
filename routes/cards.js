@@ -35,7 +35,7 @@ cloudinary.config({
 
 // INDEX - display all grounds
 router.get("/", function(request, response) {
-    var perPage = 8;
+    var perPage = 9;
     var pageQuery = parseInt(request.query.page);
     var pageNumber = pageQuery ? pageQuery : 1;
     if (request.query.search) {
@@ -137,13 +137,10 @@ router.get("/:id", function(request, response) {
         },
         function(foundCard, wished, callback) {
             // render page with appropriate wish 
-            console.log("wished before render is -->>" + wished);
             response.render("cards/show", { card: foundCard, wished: wished });
             callback(null);
         }
-    ], function(err) {
-        console.log("end of waterfall -->>" + err);
-    });
+    ], function(err) {});
 });
 
 

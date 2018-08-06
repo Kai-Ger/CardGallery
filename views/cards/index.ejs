@@ -6,25 +6,24 @@
             <p>Best Postcards from all over Israel and beyond</p>
         </div>
     </header>
-    <div class="row text-center" style="display:flex; flex-wrap: wrap;">
+    
         <% if (noMatch) { %>
             <div class="col-md-12">
                 <h3>No cards match your search. Please try again.</h3>
             </div>
-        <% } %>
-        <% cards.forEach(function(card){ %>
-            <div class="col-md-3 col-sm-6">
-                <a href="/cards/<%= card._id %>">
-                    <div class="img-thumbnail"> 
-                        <img class="img-fluid" src="<%= card.image.url %>">
-                        <div class="caption">
-                            <h4><%= card.name %></h4>
-                        </div>
-                    </div>
-                </a>
+        <% } else { %>
+            <div id="columns">
+                <% cards.forEach(function(card){ %>
+                    <a class="thumbnail-link" href="/cards/<%= card._id %>">
+                        <figure>
+                            <img src="<%= card.image.url %>">
+                            <figcaption><%= card.name %></figcaption>  
+                        </figure>    
+                    </a>    
+                <% }); %>
             </div>
-        <% }); %>
-    </div>
+        <% } %>
+    
     <div class="row justify-content-center">
     <% if (pages && pages > 0) { %>
     <ul class="pagination justify-content-center" style="margin:20px 0">

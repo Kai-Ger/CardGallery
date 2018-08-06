@@ -2,6 +2,60 @@
     color: #fff;
 }
 
+.container {
+    padding: 0;
+}
+
+/* Cards Index -  Pinterestr-like styling */
+
+#columns {
+    column-width: 320px;
+    column-gap: 15px;
+    width: 90%;
+    max-width: 100%;
+    margin: 20px auto;
+}
+
+#columns figure {
+    background: #fefefe;
+    border: 2px solid #fcfcfc;
+    box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
+    margin: 0 2px 15px;
+    padding: 15px;
+    padding-bottom: 10px;
+    display: inline-block;
+    column-break-inside: avoid;
+}
+
+#columns figure img {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 15px;
+    margin-bottom: 5px;
+}
+
+#columns figure figcaption {
+    color: #444;
+    line-height: 1.5;
+    text-decoration: none;
+}
+
+#columns:hover figure:not(:hover) {
+    opacity: 0.5;
+}
+
+@media screen and (max-width: 750px) {
+    #columns {
+        column-gap: 0px;
+    }
+    #columns figure {
+        width: 100%;
+    }
+}
+
+/* Cards Index ends */
+
 .table-row {
     cursor: pointer;
 }

@@ -99,17 +99,17 @@ router.put("/:id", function(request, response) {
 
 // Confirm sending the card to user and remove this card from wishlist
 router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request, response) {
-    async.series([
+    async.waterfall([
         function(callback) {
             // Reduce amount of cards in stock
             Card.findByIdAndUpdate(request.params.card_id, { $inc: { amount: -1 } }, function(err, card) {
                 console.log(err);
                 console.log("request.params.card_id " + request.params.card_id);
                 console.log("Amount of cards was reduced for " + card.name);
-                callback(err);
+                callback(err, card);
             });
         },
-        function(callback) {
+        function(card, callback) {
             // Send confirmation email to the user
             User.findById(request.params.id, function(err, user) {
                 var transporter = nodemailer.createTransport({
@@ -127,7 +127,9 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                     from: "yuuyuuuki@gmail.com",
                     subject: "Your wish came true",
                     text: "Dear " + user.username + "\n\n" +
-                        "The card you wished for is on its way to you.\n"
+                        "The card you wished for\n" +
+                        card.name + "\n" +
+                        "is on its way to you."
                 };
                 transporter.sendMail(mailOptions, function(err) {
                     console.log("confirmation email sent");
@@ -152,7 +154,7 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                 });
             }
         }
-    ], function(err, results) {
+    ], function(err) {
         response.redirect("/users/" + request.params.id);
     });
 });
