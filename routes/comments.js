@@ -25,6 +25,9 @@ router.post("/", middleware.isLoggedIn, function(request, response) {
                 console.log(err);
             }
             else {
+                console.log(request.body.comment.text);
+                request.body.comment.text = request.sanitize(request.body.comment.text);
+                request.body.comment.text = request.body.comment.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
                 Comment.create(request.body.comment, function(err, comment) {
                     if (err) {
                         request.flash("error", "Something went wrong");
@@ -67,6 +70,8 @@ router.get("/:comment_id/edit", middleware.checkCommentOwnership, function(reque
 
 // UPDATE - save edited comment to database
 router.put("/:comment_id", middleware.checkCommentOwnership, function(request, response) {
+    request.body.comment.text = request.sanitize(request.body.comment.text);
+    request.body.comment.text = request.body.comment.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
     Comment.findByIdAndUpdate(request.params.comment_id, request.body.comment, function(err, updatedComment) {
         if (err) {
             request.flash("error", "Something went wrong");

@@ -10,7 +10,29 @@
     margin: 0 5px 0;
 }
 
+.jumbotron {
+    padding: 20px;
+}
 
 .collapse.in {
     display: block;
+}
+
+#card_image {
+    padding: 0;
+}
+
+#card_image img {
+    max-height: 90vh;
+    max-width: 40vw;
+    width: auto;
+    height: auto;
+}
+
+#amount {
+    margin-left: auto;
+}
+
+#title {
+    margin-top: 10px;
 }

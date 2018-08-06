@@ -97,7 +97,7 @@ router.put("/:id", function(request, response) {
     }
 });
 
-// Confirm sending the card to user
+// Confirm sending the card to user and remove this card from wishlist
 router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request, response) {
     async.series([
         function(callback) {
@@ -135,8 +135,23 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                 });
                 callback(err);
             });
+        },
+        function(callback) {
+            // Remove this card from wishlist
+            if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
+                var cardID = mongoose.mongo.ObjectID(request.params.card_id);
+                User.findByIdAndUpdate(request.params.id, { $pull: { "wishes": cardID } }, function(err, user) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        user.wishesCount = user.wishesCount - 1;
+                        user.save();
+                    }
+                    callback(err);
+                });
+            }
         }
-        // Remove this card from wishlist
     ], function(err, results) {
         response.redirect("/users/" + request.params.id);
     });
@@ -174,9 +189,5 @@ router.delete("/:id", middleware.adminPermissions, function(request, response) {
         }
     });
 });
-
-
-
-
 
 module.exports = router;

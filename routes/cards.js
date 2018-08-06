@@ -35,7 +35,7 @@ cloudinary.config({
 
 // INDEX - display all grounds
 router.get("/", function(request, response) {
-    var perPage = 4;
+    var perPage = 8;
     var pageQuery = parseInt(request.query.page);
     var pageNumber = pageQuery ? pageQuery : 1;
     if (request.query.search) {
@@ -93,17 +93,60 @@ router.get("/new", middleware.adminPermissions, function(request, response) {
 
 // SHOW - display single card inner page
 router.get("/:id", function(request, response) {
-    Card.findById(request.params.id).populate("comments").exec(function(err, foundCard) {
-        if (err || !foundCard) {
-            console.log(err);
-            request.flash("error", "Card not found. Nothing to show");
-            response.redirect("back");
+    async.waterfall([
+        function(callback) {
+            // Get card data
+            Card.findById(request.params.id).populate("comments").exec(function(err, foundCard) {
+                if (err || !foundCard) {
+                    console.log(err);
+                    request.flash("error", "Card not found. Nothing to show");
+                    response.redirect("back");
+                }
+                callback(err, foundCard);
+            });
+        },
+        function(foundCard, callback) {
+            // check whether user already wished for this card
+            if (request.user != null) {
+                User.findById(request.user.id).populate("wishes").exec(function(err, foundUser) {
+                    if (err) {
+                        console.log(err);
+                        request.flash("error", "User not found");
+                        response.redirect("back");
+                    }
+                    else {
+                        callback(err, foundCard, foundUser);
+                    }
+                });
+            }
+            else {
+                var foundUser = null;
+                callback(null, foundCard, foundUser);
+            }
+        },
+        function(foundCard, foundUser, callback) {
+            var wished = false;
+            if (foundUser != null) {
+                foundUser.wishes.forEach(function(wish) {
+                    if (wish._id.equals(foundCard._id)) {
+                        wished = true;
+                    }
+                });
+            }
+            callback(null, foundCard, wished);
+        },
+        function(foundCard, wished, callback) {
+            // render page with appropriate wish 
+            console.log("wished before render is -->>" + wished);
+            response.render("cards/show", { card: foundCard, wished: wished });
+            callback(null);
         }
-        else {
-            response.render("cards/show", { card: foundCard });
-        }
+    ], function(err) {
+        console.log("end of waterfall -->>" + err);
     });
 });
+
+
 
 // CREATE - add new card to dataBase
 router.post("/", middleware.adminPermissions, upload.single("image"), function(request, response) {

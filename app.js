@@ -6,7 +6,8 @@ var express = require("express"),
     LocalStrategy = require("passport-local"),
     mothodOverride = require("method-override"),
     flash = require("connect-flash"),
-    User = require("./models/user");
+    User = require("./models/user"),
+    expressSanitizer = require("express-sanitizer");
 
 //  requiring routes
 var cardRoutes = require("./routes/cards"),
@@ -20,6 +21,7 @@ app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(mothodOverride("_method"));
 app.use(flash());
+app.use(expressSanitizer());
 
 // PASSPORT CONFIGURATION
 app.use(require("express-session")({

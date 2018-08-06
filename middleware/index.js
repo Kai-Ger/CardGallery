@@ -25,7 +25,7 @@ middlewareObj.checkCampgroundOwnership = function(request, response, next) {
         request.flash("error", "You need to be logged in order to proceed");
         response.redirect("back");
     }
-}
+};
 
 middlewareObj.checkCommentOwnership = function(request, response, next) {
     if (request.isAuthenticated()) {
@@ -49,7 +49,7 @@ middlewareObj.checkCommentOwnership = function(request, response, next) {
         request.flash("error", "You need to be logged in order to proceed");
         response.redirect("back");
     }
-}
+};
 
 middlewareObj.isLoggedIn = function(request, response, next) {
     if (request.isAuthenticated()) {
@@ -58,7 +58,7 @@ middlewareObj.isLoggedIn = function(request, response, next) {
     }
     request.flash("error", "You need to be logged in to proceed");
     response.redirect("/login");
-}
+};
 
 
 // Confirm that user has admin permissions (middleware)
@@ -73,6 +73,6 @@ middlewareObj.adminPermissions = function(request, response, next) {
             response.redirect("back");
         }
     }
-}
+};
 
 module.exports = middlewareObj;

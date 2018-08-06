@@ -28,7 +28,13 @@ router.post("/register", function(request, response) {
     });
     User.register(newUser, request.body.password, function(err, user) {
         if (err) {
-            return response.render("register", { "error": err.message });
+            console.log("err.message --->>>" + err.message);
+            if (err.message.includes("E11000")) {
+                return response.render("register", { "error": "This Email has already been registered" });
+            }
+            else {
+                return response.render("register", { "error": err.message });
+            }
         }
         passport.authenticate("local")(request, response, function() {
             request.flash("info", "Welcome to Postcard Gallery, " + user.username + "!");
