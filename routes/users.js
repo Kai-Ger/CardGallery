@@ -54,7 +54,7 @@ router.get("/", middleware.adminPermissions, function(request, response) {
 // USER PROFILE
 router.get("/:id", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
-        User.findById(request.params.id).populate("wishes").exec(function(err, foundUser) {
+        User.findById(request.params.id).populate("wishes").populate("sentCards").exec(function(err, foundUser) {
             if (err) {
                 console.log(err);
                 request.flash("error", "User not found");
@@ -135,25 +135,26 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                     console.log("confirmation email sent");
                     request.flash("success", "Confirmation email was sent to user " + user.email);
                 });
-                callback(err);
+                callback(err, card, user);
             });
         },
-        function(callback) {
-            // Remove this card from wishlist
+        function(card, user, callback) {
+            // Remove this card from wishlist and Add to Sent list
             if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
-                var cardID = mongoose.mongo.ObjectID(request.params.card_id);
-                User.findByIdAndUpdate(request.params.id, { $pull: { "wishes": cardID } }, function(err, user) {
+                User.findByIdAndUpdate(user._id, { $pull: { "wishes": card._id } }, function(err, user) {
                     if (err) {
                         console.log(err);
                     }
                     else {
                         user.wishesCount = user.wishesCount - 1;
+                        user.sentCards.push(card);
+                        user.sentCardsCount = user.sentCardsCount + 1;
                         user.save();
                     }
                     callback(err);
                 });
             }
-        }
+        },
     ], function(err) {
         response.redirect("/users/" + request.params.id);
     });
@@ -171,6 +172,24 @@ router.delete("/:id/wishes/:card_id", function(request, response) {
                 user.wishesCount = user.wishesCount - 1;
                 user.save();
                 request.flash("info", "Your wish was removed successfully");
+                response.redirect("/users/" + request.params.id);
+            }
+        });
+    }
+});
+
+// DELETE card from Sent cards section
+router.delete("/:id/sentCard/:card_id", function(request, response) {
+    if (request.user.isAdmin) {
+        var cardID = mongoose.mongo.ObjectID(request.params.card_id);
+        User.findByIdAndUpdate(request.params.id, { $pull: { "sentCards": cardID } }, function(err, user) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                user.sentCardsCount = user.sentCardsCount - 1;
+                user.save();
+                request.flash("info", "Sent card record was removed successfully");
                 response.redirect("/users/" + request.params.id);
             }
         });
