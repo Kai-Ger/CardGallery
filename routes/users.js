@@ -7,31 +7,7 @@ var nodemailer = require("nodemailer");
 var multer = require("multer");
 var mongoose = require("mongoose");
 var async = require("async");
-var config = require("../../config"); // temporary
-var storage = multer.diskStorage({
-    filename: function(request, file, callback) {
-        callback(null, Date.now() + file.originalname);
-    }
-});
 
-// Image type validation
-var imageFilter = function(request, file, callback) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
-        return callback(new Error("Only image files are allowed!"), false);
-    }
-    callback(null, true);
-};
-
-// MULTER config
-var upload = multer({ storage: storage, fileFilter: imageFilter });
-
-// CLOUDINARY config
-var cloudinary = require("cloudinary");
-cloudinary.config({
-    cloud_name: config.cloudinary_cloud_name,
-    api_key: config.cloudinary_api_key,
-    api_secret: config.cloudinary_api_secret
-});
 
 // safeguard against regex DDoS attack
 function escapeRegex(text) {
@@ -44,6 +20,7 @@ router.get("/", middleware.adminPermissions, function(request, response) {
     User.find({}, function(err, users) {
         if (err) {
             console.log(err);
+            response.render("someError");
         }
         else {
             response.render("users/users-index", { users: users });
@@ -57,10 +34,10 @@ router.get("/:id", function(request, response) {
         User.findById(request.params.id).populate("wishes").populate("sentCards").exec(function(err, foundUser) {
             if (err) {
                 console.log(err);
-                request.flash("error", "User not found");
-                response.redirect("/users");
+                response.render("someError");
             }
             else {
+                console.log(foundUser);
                 response.render("users/user-profile", { user: foundUser });
             }
         });
@@ -72,9 +49,8 @@ router.get("/:id/edit", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
         User.findById(request.params.id, function(err, foundUser) {
             if (err) {
-                request.flash("error", "User not found");
                 console.log(err);
-                return response.redirect("back");
+                response.render("someError");
             }
             response.render("users/user-edit", { user: foundUser });
         });
@@ -84,10 +60,14 @@ router.get("/:id/edit", function(request, response) {
 // UPDATE USER
 router.put("/:id", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
+        console.log(request.body.introduction);
+        request.body.user.introduction = request.sanitize(request.body.user.introduction);
+        request.body.user.introduction = request.body.user.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        console.log(request.body.introduction);
         User.findByIdAndUpdate(request.params.id, request.body.user, function(err) {
             if (err) {
-                request.flash("error", "Something went wrong while updating user profile");
-                response.redirect("back");
+                console.log(err);
+                response.render("someError");
             }
             else {
                 request.flash("info", "User profile edit was saved");
@@ -132,8 +112,10 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                         "is on its way to you."
                 };
                 transporter.sendMail(mailOptions, function(err) {
-                    console.log("confirmation email sent");
-                    request.flash("success", "Confirmation email was sent to user " + user.email);
+                    if (err != null) {
+                        console.log("confirmation email sent");
+                        request.flash("success", "Confirmation email was sent to user " + user.email);
+                    }
                 });
                 callback(err, card, user);
             });
@@ -156,7 +138,13 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
             }
         },
     ], function(err) {
-        response.redirect("/users/" + request.params.id);
+        if (err) {
+            console.log(err);
+            response.render("someError");
+        }
+        else {
+            response.redirect("/users/" + request.params.id);
+        }
     });
 });
 
@@ -167,6 +155,7 @@ router.delete("/:id/wishes/:card_id", function(request, response) {
         User.findByIdAndUpdate(request.params.id, { $pull: { "wishes": cardID } }, function(err, user) {
             if (err) {
                 console.log(err);
+                response.render("someError");
             }
             else {
                 user.wishesCount = user.wishesCount - 1;
@@ -185,6 +174,7 @@ router.delete("/:id/sentCard/:card_id", function(request, response) {
         User.findByIdAndUpdate(request.params.id, { $pull: { "sentCards": cardID } }, function(err, user) {
             if (err) {
                 console.log(err);
+                response.render("someError");
             }
             else {
                 user.sentCardsCount = user.sentCardsCount - 1;
@@ -201,8 +191,7 @@ router.delete("/:id", middleware.adminPermissions, function(request, response) {
     User.findByIdAndRemove(request.params.id, function(err) {
         if (err) {
             console.log(err);
-            request.flash("error", "Something went wrong when deleting user");
-            response.redirect("back");
+            response.render("someError");
         }
         else {
             request.flash("info", "User was deleted");

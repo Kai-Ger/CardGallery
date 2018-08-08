@@ -9,13 +9,16 @@ var express = require("express"),
     User = require("./models/user"),
     expressSanitizer = require("express-sanitizer");
 
+var config = require("./config");
+
 //  requiring routes
 var cardRoutes = require("./routes/cards"),
     userRoutes = require("./routes/users"),
     authRoutes = require("./routes/index"),
     commentRoutes = require("./routes/comments");
 
-mongoose.connect("mongodb://localhost:27017/cards", { useNewUrlParser: true });
+mongoose.connect(config.mongoDBurl, { useNewUrlParser: true });
+
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));

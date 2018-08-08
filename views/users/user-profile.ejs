@@ -12,7 +12,7 @@
         <% } %>
     </div>
     
-    <p style="margin-top: 15px"><%= user.introduction %></p>
+    <p style="margin-top: 15px"><%- user.introduction %></p>
     <h4>Wishlist</h4>
     <% if(user.wishesCount > 0){ %>
         <ul class="list-group" style="padding-bottom:10px; ">  
@@ -44,12 +44,12 @@
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <a href="/cards/<%= sent._id %>"><%= sent.name %></a>
                 <div class="btn-group" >
-                <h4><span class="badge badge-secondary" style="margin: 0 5px 0;">Sent on ...</span></h4>    
-                <% if (currentUser && currentUser.isAdmin) { %>
-                    <form action="/users/<%= user._id %>/sentCard/<%= sent._id %>?_method=DELETE" method="POST" style="display: inline;">
-                        <button class="btn btn-sm btn-danger">Delete</button>
-                    </form>
-                <% } %>
+                <h4><span class="badge badge-secondary" style="margin: 0 5px 0;">Sent on <%= sent.sentDate.toDateString() %></span></h4>    
+                    <% if (currentUser && currentUser.isAdmin) { %>
+                        <form action="/users/<%= user._id %>/sentCard/<%= sent._id %>?_method=DELETE" method="POST" style="display: inline;">
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    <% } %>
                 </div>
             <% }); %>    
             </li>

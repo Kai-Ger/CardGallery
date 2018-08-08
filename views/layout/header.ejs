@@ -11,6 +11,7 @@
     </head>
     <body>
       <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <div class="container">
         <!-- Brand/logo -->
         <a class="navbar-brand" href="/">PostCards</a>
         
@@ -48,7 +49,7 @@
             <% } else { %>
               <% if (currentUser.isAdmin) { %>
                 <li class="nav-item">
-                  <a class="nav-link" href="/users/<%= currentUser.id %>"><%= currentUser.username %></a>
+                  <a class="nav-link" href="/users/<%= currentUser.id %>" style="color:#fff"><%= currentUser.username %></a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="/cards/new">Add Card</a>
@@ -66,6 +67,7 @@
                 </li>
             <% } %>
           </ul>
+        </div>
         </div>
       </nav> 
   

@@ -6,7 +6,7 @@ var crypto = require("crypto");
 var passport = require("passport");
 var async = require("async");
 
-var config = require("../../config"); //temporary
+var config = require("../config");
 
 // HOME PAGE
 router.get("/", function(request, response) {
@@ -21,6 +21,9 @@ router.get("/register", function(request, response) {
 
 // CREATE USER - add new user to dataBase
 router.post("/register", function(request, response) {
+    request.body.introduction = request.sanitize(request.body.introduction);
+    request.body.introduction = request.body.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
     var newUser = new User({
         username: request.body.username,
         email: request.body.email,
@@ -74,13 +77,13 @@ router.get("/forgot", function(request, response) {
 // RESET - Send an emial with reset token to the user 
 router.post("/forgot", function(request, response, next) {
     async.waterfall([
-        function(done) {
+        function(callback) {
             crypto.randomBytes(20, function(err, buf) {
                 var token = buf.toString("hex");
-                done(err, token);
+                callback(err, token);
             });
         },
-        function(token, done) {
+        function(token, callback) {
             User.findOne({ email: request.body.email }, function(err, user) {
                 if (!user) {
                     request.flash("error", "No account with that email address exists.");
@@ -90,11 +93,11 @@ router.post("/forgot", function(request, response, next) {
                 user.resetPassExpires = Date.now() + 3600000; // 1 hour
 
                 user.save(function(err) {
-                    done(err, token, user);
+                    callback(err, token, user);
                 });
             });
         },
-        function(token, user, done) {
+        function(token, user, callback) {
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 host: 'smtp.gmail.com',
@@ -118,12 +121,17 @@ router.post("/forgot", function(request, response, next) {
                 console.log("email sent");
                 if (err) { console.log("error is in first sendMail function") };
                 request.flash("success", "An e-mail has been sent to " + user.email + " with further instructions.");
-                done(err, "done");
+                callback(err, "done");
             });
         }
     ], function(err) {
-        if (err) return next(err);
-        response.redirect("/forgot");
+        if (err) {
+            console.log(err);
+            response.render("someError");
+        }
+        else {
+            response.redirect("/forgot");
+        }
     });
 });
 
@@ -131,11 +139,17 @@ router.post("/forgot", function(request, response, next) {
 router.get("/reset/:token", function(request, response) {
     console.log("I'm in RESET get route");
     User.findOne({ resetPassToken: request.params.token, resetPassExpires: { $gt: Date.now() } }, function(err, user) {
-        if (!user) {
-            request.flash("error", "Password reset token is invalid or has expired.");
-            return response.redirect("/forgot");
+        if (err) {
+            console.log(err);
+            response.render("someError");
         }
-        response.render("reset-pass", { token: request.params.token });
+        else {
+            if (!user) {
+                request.flash("error", "Password reset token is invalid or has expired.");
+                return response.redirect("/forgot");
+            }
+            response.render("reset-pass", { token: request.params.token });
+        }
     });
 });
 
@@ -192,6 +206,10 @@ router.post("/reset/:token", function(request, response) {
             });
         }
     ], function(err) {
+        if (err) {
+            console.log(err);
+            return response.render("someError");
+        }
         response.redirect("/cards");
     });
 });

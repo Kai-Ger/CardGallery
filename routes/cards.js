@@ -4,10 +4,9 @@ var multer = require("multer");
 var async = require("async");
 var Card = require("../models/card");
 var User = require("../models/user");
-var Comment = require("../models/comment");
 var middleware = require("../middleware");
 var mongoose = require("mongoose");
-var config = require("../../config"); // temporary
+var config = require("../config");
 var storage = multer.diskStorage({
     filename: function(request, file, callback) {
         callback(null, Date.now() + file.originalname);
@@ -41,45 +40,58 @@ router.get("/", function(request, response) {
     if (request.query.search) {
         const regex = new RegExp(escapeRegex(request.query.search), "gi");
         Card.find({ name: regex }).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
-            Card.countDocuments({ name: regex }).exec(function(err, count) {
-                if (err) {
-                    console.log(err);
-                    response.redirect("back");
-                }
-                else {
-                    var noMatch = false;
-                    if (allCards.length == 0) {
-                        noMatch = true;
+            if (err) {
+                console.log(err);
+                response.render("someError");
+            }
+            else {
+                Card.countDocuments({ name: regex }).exec(function(err, count) {
+                    if (err) {
+                        console.log(err);
+                        response.render("someError");
                     }
-                    response.render("cards/index", {
-                        cards: allCards,
-                        current: pageNumber,
-                        noMatch: noMatch,
-                        pages: Math.ceil(count / perPage),
-                        search: request.query.search,
-                        page: 'cards'
-                    });
-                }
-            });
+                    else {
+                        var noMatch = false;
+                        if (allCards.length == 0) {
+                            noMatch = true;
+                        }
+                        response.render("cards/index", {
+                            cards: allCards,
+                            current: pageNumber,
+                            noMatch: noMatch,
+                            pages: Math.ceil(count / perPage),
+                            search: request.query.search,
+                            page: 'cards'
+                        });
+                    }
+                });
+            }
         });
     }
     else {
         Card.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
-            Card.countDocuments().exec(function(err, count) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    response.render("cards/index", {
-                        cards: allCards,
-                        current: pageNumber,
-                        pages: Math.ceil(count / perPage),
-                        noMatch: false,
-                        page: 'cards',
-                        search: false
-                    });
-                }
-            });
+            if (err) {
+                console.log(err);
+                response.render("someError");
+            }
+            else {
+                Card.countDocuments().exec(function(err, count) {
+                    if (err) {
+                        console.log(err);
+                        response.render("someError");
+                    }
+                    else {
+                        response.render("cards/index", {
+                            cards: allCards,
+                            current: pageNumber,
+                            pages: Math.ceil(count / perPage),
+                            noMatch: false,
+                            page: 'cards',
+                            search: false
+                        });
+                    }
+                });
+            }
         });
     }
 });
@@ -99,8 +111,7 @@ router.get("/:id", function(request, response) {
             Card.findById(request.params.id).populate("comments").exec(function(err, foundCard) {
                 if (err || !foundCard) {
                     console.log(err);
-                    request.flash("error", "Card not found. Nothing to show");
-                    response.redirect("back");
+                    return response.render("someError");
                 }
                 callback(err, foundCard);
             });
@@ -111,8 +122,7 @@ router.get("/:id", function(request, response) {
                 User.findById(request.user.id).populate("wishes").exec(function(err, foundUser) {
                     if (err) {
                         console.log(err);
-                        request.flash("error", "User not found");
-                        response.redirect("back");
+                        return response.render("someError");
                     }
                     else {
                         callback(err, foundCard, foundUser);
@@ -140,7 +150,12 @@ router.get("/:id", function(request, response) {
             response.render("cards/show", { card: foundCard, wished: wished });
             callback(null);
         }
-    ], function(err) {});
+    ], function(err) {
+        if (err) {
+            console.log(err);
+            response.render("someError");
+        }
+    });
 });
 
 
@@ -154,12 +169,13 @@ router.post("/", middleware.adminPermissions, upload.single("image"), function(r
             url: result.secure_url,
             public_id: result.public_id
         };
+        request.body.card.description = request.sanitize(request.body.card.description);
+        request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
         // add new card object to database
         Card.create(request.body.card, function(err, newlyCreated) {
             if (err) {
-                request.flash("error", "Something went wrong. Please try again");
                 console.log(err);
-                return response.redirect("back");
+                return response.render("someError");
             }
             response.redirect("/cards/" + newlyCreated.id);
         });
@@ -171,9 +187,8 @@ router.post("/", middleware.adminPermissions, upload.single("image"), function(r
 router.get("/:id/edit", middleware.adminPermissions, function(request, response) {
     Card.findById(request.params.id, function(err, foundCard) {
         if (err) {
-            request.flash("error", "Card not found");
             console.log(err);
-            return response.redirect("back");
+            return response.render("someError");
         }
         response.render("cards/edit", { card: foundCard });
 
@@ -186,11 +201,13 @@ router.post("/:card_id/wish", middleware.isLoggedIn, function(request, response)
     User.findById(request.user._id, function(err, user) {
         if (err) {
             console.log(err);
+            return response.render("someError");
         }
         else {
             Card.findById(request.params.card_id, function(err, card) {
                 if (err) {
                     console.log(err);
+                    return response.render("someError");
                 }
                 else {
                     user.wishes.push(card);
@@ -215,13 +232,25 @@ router.put("/:id", middleware.adminPermissions, upload.single("image"), function
                 url: result.secure_url,
                 public_id: result.public_id
             };
+            request.body.card.description = request.sanitize(request.body.card.description);
+            request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
             Card.findByIdAndUpdate(request.params.id, request.body.card, function(err) {
+                if (err) {
+                    console.log(err);
+                    return response.render("someError");
+                }
                 response.redirect("/cards/" + request.params.id);
             });
         });
     }
     else {
+        request.body.card.description = request.sanitize(request.body.card.description);
+        request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
         Card.findByIdAndUpdate(request.params.id, request.body.card, function(err) {
+            if (err) {
+                console.log(err);
+                return response.render("someError");
+            }
             response.redirect("/cards/" + request.params.id);
         });
     }
@@ -240,6 +269,7 @@ router.delete("/:id", middleware.adminPermissions, function(request, response, n
             Card.findByIdAndRemove(request.params.id, function(err, foundCard) {
                 if (err || !foundCard) {
                     console.log(err);
+                    return response.render("someError");
                 }
                 else {
                     done(err);
@@ -262,6 +292,7 @@ function cloudDelete(id) {
     Card.findById(id, function(err, foundCard) {
         if (err || !foundCard) {
             console.log("Card not found. Can't delete image");
+            console.log(err);
         }
         else {
             cloudinary.uploader.destroy(foundCard.image.public_id, function(err, result) {
@@ -270,6 +301,5 @@ function cloudDelete(id) {
         }
     });
 }
-
 
 module.exports = router;
