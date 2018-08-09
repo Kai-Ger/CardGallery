@@ -23,7 +23,7 @@
                 <% if (currentUser && currentUser.isAdmin) { %>
                     <h4><span class="badge badge-secondary" ><%= wish.amount %> cards left</span></h4>
                     <form action="/users/<%= user._id %>/sent/<%= wish._id %>" method="POST">
-                        <button class="btn btn-sm btn-primary" style="margin: 0 5px 0;">Card sent</button>
+                        <button class="btn btn-sm btn-primary" <%= wish.amount === 0 ? 'disabled' : '' %> style="margin: 0 5px 0;">Card sent</button>
                     </form>
                 <% } %>
                 <form action="/users/<%= user._id %>/wishes/<%= wish._id %>?_method=DELETE" method="POST" style="display: inline;">

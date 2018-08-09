@@ -81,6 +81,18 @@ router.put("/:id", function(request, response) {
 router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request, response) {
     async.waterfall([
         function(callback) {
+            // Check that card is not out of stock
+            Card.findById(request.params.card_id, function(err, card) {
+                if (card.amount < 1) {
+                    request.flash("error", "The card is out of stock");
+                    callback("out of stock");
+                }
+                else {
+                    callback(err);
+                }
+            });
+        },
+        function(callback) {
             // Reduce amount of cards in stock
             Card.findByIdAndUpdate(request.params.card_id, { $inc: { amount: -1 } }, function(err, card) {
                 console.log(err);
@@ -139,12 +151,17 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
             }
         },
     ], function(err) {
-        if (err) {
-            console.log(err);
-            response.render("someError");
+        if (err === "out of stock") {
+            response.redirect('back');
         }
         else {
-            response.redirect("/users/" + request.params.id);
+            if (err) {
+                console.log(err);
+                response.render("someError");
+            }
+            else {
+                response.redirect("/users/" + request.params.id);
+            }
         }
     });
 });
