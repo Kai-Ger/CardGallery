@@ -42,11 +42,11 @@
         <ul class="list-group" style="padding-bottom:10px; ">  
             <% user.sentCards.forEach(function(sent) { %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="/cards/<%= sent._id %>"><%= sent.name %></a>
+                <a href="/cards/<%= sent.pCard._id %>"><%= sent.pCard.name %></a>
                 <div class="btn-group" >
                 <h4><span class="badge badge-secondary" style="margin: 0 5px 0;">Sent on <%= sent.sentDate.toDateString() %></span></h4>    
                     <% if (currentUser && currentUser.isAdmin) { %>
-                        <form action="/users/<%= user._id %>/sentCard/<%= sent._id %>?_method=DELETE" method="POST" style="display: inline;">
+                        <form action="/users/<%= user._id %>/sentCard/<%= sent.pCard._id %>?_method=DELETE" method="POST" style="display: inline;">
                             <button class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     <% } %>

@@ -23,7 +23,7 @@ router.get("/", middleware.adminPermissions, function(request, response) {
             response.render("someError");
         }
         else {
-            response.render("users/users-index", { users: users });
+            response.render("users/users-index", { users: users, page: 'users' });
         }
     });
 });
@@ -31,7 +31,7 @@ router.get("/", middleware.adminPermissions, function(request, response) {
 // USER PROFILE
 router.get("/:id", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
-        User.findById(request.params.id).populate("wishes").populate("sentCards").exec(function(err, foundUser) {
+        User.findById(request.params.id).populate("wishes").populate("sentCards.pCard").exec(function(err, foundUser) {
             if (err) {
                 console.log(err);
                 response.render("someError");
@@ -129,7 +129,8 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                     }
                     else {
                         user.wishesCount = user.wishesCount - 1;
-                        user.sentCards.push(card);
+                        var sent = { sentDate: new Date(), pCard: card };
+                        user.sentCards.push(sent);
                         user.sentCardsCount = user.sentCardsCount + 1;
                         user.save();
                     }
@@ -171,7 +172,7 @@ router.delete("/:id/wishes/:card_id", function(request, response) {
 router.delete("/:id/sentCard/:card_id", function(request, response) {
     if (request.user.isAdmin) {
         var cardID = mongoose.mongo.ObjectID(request.params.card_id);
-        User.findByIdAndUpdate(request.params.id, { $pull: { "sentCards": cardID } }, function(err, user) {
+        User.findByIdAndUpdate(request.params.id, { $pull: { "sentCards": { "pCard": cardID } } }, { 'new': true }, function(err, user) {
             if (err) {
                 console.log(err);
                 response.render("someError");

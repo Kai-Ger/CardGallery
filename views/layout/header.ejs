@@ -52,10 +52,10 @@
                   <a class="nav-link" href="/users/<%= currentUser.id %>" style="color:#fff"><%= currentUser.username %></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/cards/new">Add Card</a>
+                  <a class="nav-link <%= typeof page !== 'undefined' && page === 'cards/new' ? 'active' : '' %>" href="/cards/new">Add Card</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/users">Users</a>
+                  <a class="nav-link <%= typeof page !== 'undefined' && page === 'users' ? 'active' : '' %>" href="/users">Users</a>
                 </li>
                 <% } else { %>
                   <li class="nav-item">

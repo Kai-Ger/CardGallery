@@ -99,7 +99,7 @@ router.get("/", function(request, response) {
 
 // NEW - show the form to create a new card
 router.get("/new", middleware.adminPermissions, function(request, response) {
-    response.render("cards/new");
+    response.render("cards/new", { page: 'cards/new' });
 });
 
 
