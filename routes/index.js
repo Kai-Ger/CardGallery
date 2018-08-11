@@ -21,8 +21,10 @@ router.get("/register", function(request, response) {
 
 // CREATE USER - add new user to dataBase
 router.post("/register", function(request, response) {
-    request.body.introduction = request.sanitize(request.body.introduction);
-    request.body.introduction = request.body.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    if (request.body.introduction) {
+        request.body.introduction = request.sanitize(request.body.introduction);
+        request.body.introduction = request.body.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    }
 
     var newUser = new User({
         username: request.body.username,

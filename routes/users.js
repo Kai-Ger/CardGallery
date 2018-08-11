@@ -60,10 +60,10 @@ router.get("/:id/edit", function(request, response) {
 // UPDATE USER
 router.put("/:id", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
-        console.log(request.body.introduction);
-        request.body.user.introduction = request.sanitize(request.body.user.introduction);
-        request.body.user.introduction = request.body.user.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
-        console.log(request.body.introduction);
+        if (request.body.introduction) {
+            request.body.user.introduction = request.sanitize(request.body.user.introduction);
+            request.body.user.introduction = request.body.user.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        }
         User.findByIdAndUpdate(request.params.id, request.body.user, function(err) {
             if (err) {
                 console.log(err);
@@ -79,10 +79,13 @@ router.put("/:id", function(request, response) {
 
 // Confirm sending the card to user and remove this card from wishlist
 router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request, response) {
+    console.log("card_id ===========>>> " + request.params.card_id);
     async.waterfall([
         function(callback) {
             // Check that card is not out of stock
             Card.findById(request.params.card_id, function(err, card) {
+                console.log("card.amount" + card.amount);
+                console.log("card.name" + card.name);
                 if (card.amount < 1) {
                     request.flash("error", "The card is out of stock");
                     callback("out of stock");
@@ -152,6 +155,7 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
         },
     ], function(err) {
         if (err === "out of stock") {
+            console.log(err);
             response.redirect('back');
         }
         else {
