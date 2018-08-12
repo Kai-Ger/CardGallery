@@ -6,9 +6,7 @@
     <div>
         <a class="btn btn-outline-info" href="/users/<%= user._id %>/edit">Edit user profile</a>
         <% if (currentUser && currentUser.isAdmin) { %>
-            <form action="/users/<%= user._id %>?_method=DELETE" method="POST" style="display: inline;">
-                <button class="btn btn-sm btn-outline-danger">Delete user</button>
-            </form>
+            <button class="btn btn-sm btn-outline-danger" data-href="/users/<%= user._id %>/delete" data-toggle="modal" data-target="#confirm-delete">Delete user</button>
         <% } %>
     </div>
     <p style="margin-top: 15px"><%- user.introduction %></p>
@@ -18,16 +16,14 @@
             <% user.wishes.forEach(function(wish) { %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <a href="/cards/<%= wish._id %>"><%= wish.name %></a>
-                <div class="btn-group" >
-                <% if (currentUser && currentUser.isAdmin) { %>
-                    <h4><span class="badge badge-secondary" ><%= wish.amount %> cards left</span></h4>
-                    <form action="/users/<%= user._id %>/sent/<%= wish._id %>" method="POST">
-                        <button class="btn btn-sm btn-primary" <%= wish.amount === 0 ? 'disabled' : '' %> style="margin: 0 5px 0;">Card sent</button>
-                    </form>
-                <% } %>
-                <form action="/users/<%= user._id %>/wishes/<%= wish._id %>?_method=DELETE" method="POST" style="display: inline;">
-                    <button class="btn btn-sm btn-danger">Delete</button>
-                </form>
+                <div class="d-flex flex-row-end" >
+                    <% if (currentUser && currentUser.isAdmin) { %>
+                        <h4><span class="badge badge-secondary" ><%= wish.amount %> cards left</span></h4>
+                        <form action="/users/<%= user._id %>/sent/<%= wish._id %>" method="POST">
+                            <button class="btn btn-sm btn-primary" <%= wish.amount === 0 ? 'disabled' : '' %> style="margin: 0 5px 0;">Card sent</button>
+                        </form>
+                    <% } %>
+                    <button class="btn btn-sm btn-danger" data-href="/users/<%= user._id %>/wishes/<%= wish._id %>/delete" data-toggle="modal" data-target="#confirm-delete">Delete</button>
                 </div>
             <% }); %>    
             </li>
@@ -42,12 +38,10 @@
             <% user.sentCards.forEach(function(sent) { %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <a href="/cards/<%= sent.pCard._id %>"><%= sent.pCard.name %></a>
-                <div class="btn-group" >
-                <h4><span class="badge badge-secondary" style="margin: 0 5px 0;">Sent on <%= sent.sentDate.toDateString() %></span></h4>    
+                <div class="d-flex flex-row-end" >
+                    <h4><span class="badge badge-secondary" style="margin: 0 5px 0;">Sent on <%= sent.sentDate.toDateString() %></span></h4>    
                     <% if (currentUser && currentUser.isAdmin) { %>
-                        <form action="/users/<%= user._id %>/sentCard/<%= sent.pCard._id %>?_method=DELETE" method="POST" style="display: inline;">
-                            <button class="btn btn-sm btn-danger">Delete</button>
-                        </form>
+                        <button class="btn btn-sm btn-danger" data-href="/users/<%= user._id %>/sentCard/<%= sent.pCard._id %>/delete" data-toggle="modal" data-target="#confirm-delete" >Delete</button>
                     <% } %>
                 </div>
             <% }); %>    
@@ -58,5 +52,6 @@
     <% } %>
 
 </div>
+
 
 <% include ../layout/footer %>

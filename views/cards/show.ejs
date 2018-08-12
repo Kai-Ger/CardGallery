@@ -26,10 +26,8 @@
          
          <% if(currentUser && currentUser.isAdmin){ %>
          <div id="admin_controls" class="align-self-end form-inline">
-            <a class="btn btn-outline-info btn-sm" href="/cards/<%= card._id %>/edit">Edit</a>
-            <form class="delete-form" action="/cards/<%= card._id %>?_method=DELETE" method="POST">
-               <button class="btn btn-outline-danger btn-sm">Delete</button>
-            </form>
+         <a class="btn btn-outline-info btn-sm" href="/cards/<%= card._id %>/edit">Edit</a>
+            <button class="btn btn-outline-danger btn-sm" data-href="/cards/<%= card._id %>/delete" data-toggle="modal" data-target="#confirm-delete">Delete</button>
          </div>
          <% } %>
       </div>
@@ -100,9 +98,7 @@
             <a class="btn btn-sm btn-outline-warning" role="button" data-toggle="collapse" href="#collapseEdit<%= comment._id %>" aria-expanded="false" aria-controls="collapse<%= comment._id %>">
             Edit</a>
             <!--Delete comment button-->
-            <form id="delete-form" action="/cards/<%= card._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST" style="display: inline;">
-               <button class="btn btn-sm btn-outline-danger">Delete</button>
-            </form>
+            <button class="btn btn-sm btn-outline-danger" data-href="/cards/<%= card._id %>/comments/<%= comment._id %>/delete" data-toggle="modal" data-target="#confirm-delete">Delete</button>
             <!--Edit comment form-->
             <div class="collapse" id="collapseEdit<%= comment._id %>">
                <div class="card card-body" style="border-left: 5px solid #ffbb33; margin-top: 15px;">

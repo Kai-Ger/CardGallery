@@ -171,7 +171,7 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
 });
 
 // DELETE card from wishlist
-router.delete("/:id/wishes/:card_id", function(request, response) {
+router.get("/:id/wishes/:card_id/delete", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
         var cardID = mongoose.mongo.ObjectID(request.params.card_id);
         User.findByIdAndUpdate(request.params.id, { $pull: { "wishes": cardID } }, function(err, user) {
@@ -190,7 +190,7 @@ router.delete("/:id/wishes/:card_id", function(request, response) {
 });
 
 // DELETE card from Sent cards section
-router.delete("/:id/sentCard/:card_id", function(request, response) {
+router.get("/:id/sentCard/:card_id/delete", function(request, response) {
     if (request.user.isAdmin) {
         var cardID = mongoose.mongo.ObjectID(request.params.card_id);
         User.findByIdAndUpdate(request.params.id, { $pull: { "sentCards": { "pCard": cardID } } }, { 'new': true }, function(err, user) {
@@ -209,7 +209,7 @@ router.delete("/:id/sentCard/:card_id", function(request, response) {
 });
 
 // DELETE USER
-router.delete("/:id", middleware.adminPermissions, function(request, response) {
+router.get("/:id/delete", middleware.adminPermissions, function(request, response) {
     User.findByIdAndRemove(request.params.id, function(err) {
         if (err) {
             console.log(err);

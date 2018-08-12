@@ -169,8 +169,10 @@ router.post("/", middleware.adminPermissions, upload.single("image"), function(r
             url: result.secure_url,
             public_id: result.public_id
         };
-        request.body.card.description = request.sanitize(request.body.card.description);
-        request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        if (request.body.card.description) {
+            request.body.card.description = request.sanitize(request.body.card.description);
+            request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        }
         // add new card object to database
         Card.create(request.body.card, function(err, newlyCreated) {
             if (err) {
@@ -232,8 +234,10 @@ router.put("/:id", middleware.adminPermissions, upload.single("image"), function
                 url: result.secure_url,
                 public_id: result.public_id
             };
-            request.body.card.description = request.sanitize(request.body.card.description);
-            request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
+            if (request.body.card.description) {
+                request.body.card.description = request.sanitize(request.body.card.description);
+                request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
+            }
             Card.findByIdAndUpdate(request.params.id, request.body.card, function(err) {
                 if (err) {
                     console.log(err);
@@ -244,8 +248,10 @@ router.put("/:id", middleware.adminPermissions, upload.single("image"), function
         });
     }
     else {
-        request.body.card.description = request.sanitize(request.body.card.description);
-        request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        if (request.body.card.description) {
+            request.body.card.description = request.sanitize(request.body.card.description);
+            request.body.card.description = request.body.card.description.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        }
         Card.findByIdAndUpdate(request.params.id, request.body.card, function(err) {
             if (err) {
                 console.log(err);
@@ -257,7 +263,7 @@ router.put("/:id", middleware.adminPermissions, upload.single("image"), function
 });
 
 // DESTROY - delete existing card from database
-router.delete("/:id", middleware.adminPermissions, function(request, response, next) {
+router.get("/:id/delete", middleware.adminPermissions, function(request, response, next) {
     console.log("im in delete route");
     async.waterfall([
         function(done) {

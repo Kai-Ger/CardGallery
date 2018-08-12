@@ -8,7 +8,7 @@ var cardSchema = new mongoose.Schema({
         public_id: String
     },
     description: String,
-    amount: { type: Number, min: 0 },
+    amount: { type: Number, default: 0 },
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,

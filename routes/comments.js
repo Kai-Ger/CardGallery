@@ -72,7 +72,7 @@ router.put("/:comment_id", middleware.checkCommentOwnership, function(request, r
 });
 
 // DESTROY - delete existing comment from database
-router.delete("/:comment_id", middleware.checkCommentOwnership, function(request, response) {
+router.get("/:comment_id/delete", middleware.checkCommentOwnership, function(request, response) {
     Comment.findByIdAndRemove(request.params.comment_id, function(err) {
         if (err) {
             console.log(err);

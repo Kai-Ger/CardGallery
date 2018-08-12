@@ -3,12 +3,12 @@
 <div class="container">
     <h1 style="text-align: center; margin-top: 10px">Create new Card</h1>
     <div style="width: 30%; margin: 30px auto;">
-        <form class="submitonclick" action="/cards" method="POST" enctype="multipart/form-data">
+        <form action="/cards" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="name" name="card[name]" required>
             </div>
             <div class="form-group">
-                <input type="number" class="form-control" placeholder="amount" name="card[amount]" min="0" step="1">
+                <input type="number" class="form-control" placeholder="amount" name="card[amount]" min="0" step="1" required>
             </div>
             <div class="form-group">
                 <label for="image">Image</label>
@@ -19,7 +19,7 @@
                 <textarea rows="6" class="form-control" name="card[description]"></textarea>
             </div>
             <div class="form-group">
-                <button class="btn btn-primary btn-block clickonce">Submit!</button>
+                <button class="btn btn-primary btn-block ">Submit!</button>
             </div>
         </form>
     </div>

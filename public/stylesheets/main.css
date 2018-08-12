@@ -90,3 +90,7 @@
 #title {
     margin-top: 10px;
 }
+
+.btn-sm {
+    height: 30px;
+}
