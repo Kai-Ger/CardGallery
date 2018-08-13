@@ -60,8 +60,7 @@ middlewareObj.isLoggedIn = function(request, response, next) {
     response.redirect("/login");
 };
 
-
-// Confirm that user has admin permissions (middleware)
+// Confirm that user has admin permissions
 middlewareObj.adminPermissions = function(request, response, next) {
     if (request.isAuthenticated()) {
         if (request.user.isAdmin) {

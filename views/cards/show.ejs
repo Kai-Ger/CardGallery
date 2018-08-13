@@ -37,7 +37,11 @@
    <!-- COMMENT SECTION -->
    <div class="card card-body">
       <div>
-         <a class="btn btn-outline-success float-right" role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
+         <% if (currentUser && currentUser.active != true) { %>
+            <p class="float-right"><em>Please complete your registration in order to comment</em></p>
+         <% } else { %>
+            <a class="btn btn-outline-success float-right"  role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
+         <% } %>
          <i class="fa fa-plus"></i> 
          Add new comment
          </a>

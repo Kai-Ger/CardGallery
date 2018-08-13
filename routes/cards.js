@@ -159,8 +159,6 @@ router.get("/:id", function(request, response) {
     });
 });
 
-
-
 // CREATE - add new card to dataBase
 router.post("/", middleware.adminPermissions, upload.single("image"), function(request, response) {
 
@@ -201,28 +199,34 @@ router.get("/:id/edit", middleware.adminPermissions, function(request, response)
 
 // ADD CARD to wishlist
 router.post("/:card_id/wish", middleware.isLoggedIn, function(request, response) {
-    User.findById(request.user._id, function(err, user) {
-        if (err) {
-            console.log(err);
-            return response.render("someError");
-        }
-        else {
-            Card.findById(request.params.card_id, function(err, card) {
-                if (err) {
-                    console.log(err);
-                    return response.render("someError");
-                }
-                else {
-                    user.wishes.push(card);
-                    user.wishesCount = user.wishesCount + 1;
-                    user.save();
-                    request.flash("info", "Your wish was added successfully");
-                    response.redirect("/cards/" + card._id);
-                    emailToAdmin(user, card, request);
-                }
-            });
-        }
-    });
+    if (!request.user.active) {
+        request.flash("error", "User should complete email confirmation order to proceed");
+        response.redirect("back");
+    }
+    else {
+        User.findById(request.user._id, function(err, user) {
+            if (err) {
+                console.log(err);
+                return response.render("someError");
+            }
+            else {
+                Card.findById(request.params.card_id, function(err, card) {
+                    if (err) {
+                        console.log(err);
+                        return response.render("someError");
+                    }
+                    else {
+                        user.wishes.push(card);
+                        user.wishesCount = user.wishesCount + 1;
+                        user.save();
+                        request.flash("info", "Your wish was added successfully");
+                        response.redirect("/cards/" + card._id);
+                        emailToAdmin(user, card, request);
+                    }
+                });
+            }
+        });
+    }
 });
 
 // UPDATE - save edited card to database

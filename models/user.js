@@ -9,6 +9,8 @@ var UserSchema = new mongoose.Schema({
         introduction: String,
         resetPassToken: String,
         resetPassExpires: Date,
+        active: { type: Boolean, default: false }, // active=false until email is confirmed
+        activateAccountToken: String,
         isAdmin: { type: Boolean, default: false },
         wishesCount: { type: Number, default: 0 },
         wishes: [

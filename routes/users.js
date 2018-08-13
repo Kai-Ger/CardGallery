@@ -32,7 +32,7 @@ router.get("/", middleware.adminPermissions, function(request, response) {
 
 // USER PROFILE
 router.get("/:id", function(request, response) {
-    if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
+    if (request.user._id.equals(request.params.id) && request.user.active || request.user.isAdmin) {
         User.findById(request.params.id).populate("wishes").populate("sentCards.pCard").exec(function(err, foundUser) {
             if (err) {
                 console.log(err);
@@ -43,6 +43,12 @@ router.get("/:id", function(request, response) {
                 response.render("users/user-profile", { user: foundUser });
             }
         });
+    }
+    else {
+        if (!request.user.active) {
+            request.flash("error", "User should complete email confirmation order to proceed");
+            response.redirect("back");
+        }
     }
 });
 
