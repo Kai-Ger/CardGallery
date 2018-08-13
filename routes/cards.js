@@ -6,6 +6,7 @@ var Card = require("../models/card");
 var User = require("../models/user");
 var middleware = require("../middleware");
 var mongoose = require("mongoose");
+var nodemailer = require("nodemailer");
 var config = require("../config");
 var storage = multer.diskStorage({
     filename: function(request, file, callback) {
@@ -217,6 +218,7 @@ router.post("/:card_id/wish", middleware.isLoggedIn, function(request, response)
                     user.save();
                     request.flash("info", "Your wish was added successfully");
                     response.redirect("/cards/" + card._id);
+                    emailToAdmin(user, card, request);
                 }
             });
         }
@@ -305,6 +307,37 @@ function cloudDelete(id) {
                 console.log(err);
             });
         }
+    });
+}
+
+// Sent Email Notification to admin
+function emailToAdmin(user, card, request) {
+    console.log("User name is " + user.username);
+    console.log("Card name " + card.name);
+
+    var transporter = nodemailer.createTransport({
+        service: "Gmail",
+        host: 'smtp.gmail.com',
+        auth: {
+            type: "login", // default
+            user: config.email_to_notify,
+            pass: config.email_pass
+        }
+    });
+    var mailOptions = {
+        to: config.email_to_notify,
+        from: config.email_to_notify,
+        subject: "User added a new card to the Wishlist",
+        text: "User " + user.username + " has added a new card\n" + card.name + "\n to the Wishlist.",
+        html: "User <a href=" + request.headers.host + "/users/" + user._id + ">" + user.username + "</a> has added a new card <a href=" + request.headers.host + "/cards/" + card._id + ">" + card.name + " to the Wishlist.",
+
+    };
+    transporter.sendMail(mailOptions, function(err) {
+        if (err != null) {
+            console.log("confirmation email sent to admin");
+        }
+        console.log(err);
+
     });
 }
 

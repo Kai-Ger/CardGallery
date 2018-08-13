@@ -8,6 +8,8 @@ var multer = require("multer");
 var mongoose = require("mongoose");
 var async = require("async");
 
+var config = require("../config");
+
 
 // safeguard against regex DDoS attack
 function escapeRegex(text) {
@@ -66,8 +68,13 @@ router.put("/:id", function(request, response) {
         }
         User.findByIdAndUpdate(request.params.id, request.body.user, function(err) {
             if (err) {
-                console.log(err);
-                response.render("someError");
+                console.log("err.message --->>>" + err.message);
+                if (err.message.includes("E11000")) {
+                    return response.render("register", { "error": "This Email has already been registered" });
+                }
+                else {
+                    return response.render("register", { "error": err.message });
+                }
             }
             else {
                 request.flash("info", "User profile edit was saved");
@@ -112,22 +119,20 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                     host: 'smtp.gmail.com',
                     auth: {
                         type: "login", // default
-                        user: "yuuyuuuki@gmail.com",
-                        pass: "yukonpass123"
-                        //  pass: process.env.GMAILPW
+                        user: config.email_to_notify,
+                        pass: config.email_pass
                     }
                 });
                 var mailOptions = {
                     to: user.email,
-                    from: "yuuyuuuki@gmail.com",
+                    from: config.email_to_notify,
                     subject: "Your wish came true",
-                    text: "Dear " + user.username + "\n\n" +
-                        "The card you wished for\n" +
-                        card.name + "\n" +
-                        "is on its way to you."
+                    text: "Dear " + user.username + "\n\n" + "The card you wished for\n" + card.name + "\n" + "is on its way to you.",
+                    html: "Dear <strong>" + user.username + "</strong><br><br>" + "The card you wished for<br>" +
+                        "<a href=" + request.headers.host + "/cards/" + card._id + ">" + card.name + "</a><br>is on its way to you.",
                 };
                 transporter.sendMail(mailOptions, function(err) {
-                    if (err != null) {
+                    if (!err) {
                         console.log("confirmation email sent");
                         request.flash("success", "Confirmation email was sent to user " + user.email);
                     }

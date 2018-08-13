@@ -199,7 +199,9 @@ router.post("/reset/:token", function(request, response) {
                 from: "yuuyuuuki@gmail.com",
                 subject: "Your password has been changed",
                 text: "Dear " + user.username + "\n\n" +
-                    "This is a confirmation that the password for your account " + user.email + " has just been changed.\n"
+                    "This is a confirmation that the password for your account " + user.email + " has just been changed.\n",
+                html: "Dear <strong>" + user.username + "</strong><br><br>" + "This is a confirmation that the password for your account " +
+                    "<a href=" + request.headers.host + "/users/" + user._id + ">" + user.username + "</a> has just been changed.",
             };
             transporter.sendMail(mailOptions, function(err) {
                 console.log("confirmation email sent");
