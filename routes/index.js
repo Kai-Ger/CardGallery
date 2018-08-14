@@ -45,7 +45,6 @@ router.post("/register", middleware.usernameToLowerCase, function(request, respo
 
             User.register(newUser, request.body.password, function(err, user) {
                 if (err) {
-                    console.log("err.message --->>>" + err.message);
                     if (err.message.includes("E11000")) {
                         return response.render("register", { "error": "This Email has already been registered" });
                     }
@@ -104,14 +103,12 @@ router.post("/register", middleware.usernameToLowerCase, function(request, respo
 
 // CREATE USER - confirm email via token
 router.get("/register/:token", function(request, response) {
-    console.log("Im in register - email confirmation - route");
     User.findOne({ activateAccountToken: request.params.token }, function(err, user) {
         if (err) {
             console.log(err);
             response.render("someError");
         }
         else {
-            console.log("Im in else");
             if (!user) {
                 request.flash("error", "Password reset token is invalid.");
                 return response.redirect("/register");
@@ -119,7 +116,6 @@ router.get("/register/:token", function(request, response) {
             user.active = true;
             user.activateAccountToken = 0;
             user.save();
-            console.log("I just saved user data");
             response.redirect("/login");
         }
     });
@@ -191,7 +187,7 @@ router.post("/forgot", function(request, response) {
             });
             var mailOptions = {
                 to: user.email,
-                from: "yuuyuuuki@gmail.com",
+                from: config.email_to_notify,
                 subject: "Reset your password",
                 text: "Dear " + user.username + "\n\n" +
                     "You recently asked to reset your password. To complete your request, please follow this link:\n\n " +
@@ -200,7 +196,6 @@ router.post("/forgot", function(request, response) {
             };
             transporter.sendMail(mailOptions, function(err) {
                 console.log("email sent");
-                if (err) { console.log("error is in first sendMail function") };
                 request.flash("success", "An e-mail has been sent to " + user.email + " with further instructions.");
                 callback(err, "done");
             });
@@ -218,7 +213,6 @@ router.post("/forgot", function(request, response) {
 
 // RESET - Display submit new password form
 router.get("/reset/:token", function(request, response) {
-    console.log("I'm in RESET get route");
     User.findOne({ resetPassToken: request.params.token, resetPassExpires: { $gt: Date.now() } }, function(err, user) {
         if (err) {
             console.log(err);
@@ -236,7 +230,6 @@ router.get("/reset/:token", function(request, response) {
 
 // RESET - Handle submission of the new password 
 router.post("/reset/:token", function(request, response) {
-    console.log("I'm in RESET post route");
     async.waterfall([
         function(callback) {
             User.findOne({ resetPassToken: request.params.token, resetPassExpires: { $gt: Date.now() } }, function(err, user) {

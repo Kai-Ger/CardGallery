@@ -17,7 +17,11 @@
                     <a class="thumbnail-link" href="/cards/<%= card._id %>">
                         <figure>
                             <img src="<%= card.image.url %>">
-                            <figcaption><%= card.name %></figcaption>  
+                            <figcaption><%= card.name %> 
+                                <% if (card.amount < 1) { %>
+                                    <span class="badge badge-dark float-right">Out of stock</span>
+                                <% } %>
+                            </figcaption>  
                         </figure>    
                     </a>    
                 <% }); %>

@@ -182,7 +182,6 @@ router.post("/", middleware.adminPermissions, upload.single("image"), function(r
             response.redirect("/cards/" + newlyCreated.id);
         });
     });
-    console.log(request.body.image);
 });
 
 // EDIT - edit existing card
@@ -271,7 +270,6 @@ router.put("/:id", middleware.adminPermissions, upload.single("image"), function
 
 // DESTROY - delete existing card from database
 router.get("/:id/delete", middleware.adminPermissions, function(request, response, next) {
-    console.log("im in delete route");
     async.waterfall([
         function(callback) {
             cloudDelete(request.params.id);
@@ -337,7 +335,6 @@ router.get("/:id/delete", middleware.adminPermissions, function(request, respons
                             else {
                                 user.wishesCount = user.wishesCount - 1;
                                 user.save();
-                                console.log("wish " + request.params.id + " was removed from " + user.username);
                             }
                         });
                     }
@@ -345,13 +342,10 @@ router.get("/:id/delete", middleware.adminPermissions, function(request, respons
                 //from Sentlist
                 user.sentCards.forEach(function(sCard) {
                     if (sCard.pCard._id.equals(request.params.id)) {
-                        User.findByIdAndUpdate(user._id, { $pull: { "sentCards": { "pCard": sCard._id } } }, function(err, user) {
+                        User.findByIdAndUpdate(user._id, { $pull: { "sentCards": { "pCard": sCard._id } } }, function(err) {
                             if (err) {
                                 console.log(err);
                                 response.render("someError");
-                            }
-                            else {
-                                console.log("sent card " + request.params.id + " was removed from " + user.username);
                             }
                         });
                     }
@@ -374,7 +368,6 @@ function escapeRegex(text) {
 function cloudDelete(id) {
     Card.findById(id, function(err, foundCard) {
         if (err || !foundCard) {
-            console.log("Card not found. Can't delete image");
             console.log(err);
         }
         else {
@@ -387,9 +380,6 @@ function cloudDelete(id) {
 
 // Sent Email Notification to admin
 function emailToAdmin(user, card, request) {
-    console.log("User name is " + user.username);
-    console.log("Card name " + card.name);
-
     var transporter = nodemailer.createTransport({
         service: "Gmail",
         host: 'smtp.gmail.com',

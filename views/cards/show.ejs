@@ -14,7 +14,9 @@
          <% } %>
          </div>
          <p class="card-text"><%- card.description %></p>
-         <% if (!wished){ %> 
+         <% if (card.amount < 1) { %>
+          <span class="btn btn-outline-warning float-right disable-btn" style="margin-bottom:15px" >Out of stock</span>
+         <% } else { if (!wished){ %> 
             <form class="submitonclick" action="/cards/<%= card._id %>/wish" method="POST">
                <button type="submit" class="btn btn-secondary float-right clickonce" style="margin-bottom:15px" >Add to Wishlist</button>
             </form>
@@ -22,7 +24,7 @@
             <form action="/users/<%= currentUser.id %>" method="GET">
                <button class="btn btn-outline-secondary float-right" style="margin-bottom:15px" >On my Wishlist</button>
             </form>
-         <% } %>   
+         <% } } %>   
          
          <% if(currentUser && currentUser.isAdmin){ %>
          <div id="admin_controls" class="align-self-end form-inline">

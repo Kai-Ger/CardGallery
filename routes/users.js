@@ -84,7 +84,7 @@ router.put("/:id", function(request, response) {
             }
             else {
                 request.flash("info", "User profile edit was saved");
-                response.redirect("/login");
+                response.redirect("/logout");
             }
         });
     }
@@ -92,13 +92,10 @@ router.put("/:id", function(request, response) {
 
 // Confirm sending the card to user and remove this card from wishlist
 router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request, response) {
-    console.log("card_id ===========>>> " + request.params.card_id);
     async.waterfall([
         function(callback) {
             // Check that card is not out of stock
             Card.findById(request.params.card_id, function(err, card) {
-                console.log("card.amount" + card.amount);
-                console.log("card.name" + card.name);
                 if (card.amount < 1) {
                     request.flash("error", "The card is out of stock");
                     callback("out of stock");
@@ -112,8 +109,6 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
             // Reduce amount of cards in stock
             Card.findByIdAndUpdate(request.params.card_id, { $inc: { amount: -1 } }, function(err, card) {
                 console.log(err);
-                console.log("request.params.card_id " + request.params.card_id);
-                console.log("Amount of cards was reduced for " + card.name);
                 callback(err, card);
             });
         },
@@ -241,7 +236,6 @@ router.get("/:id/active", middleware.adminPermissions, function(request, respons
             response.render("someError");
         }
         else {
-            console.log("User Account has been activated");
             request.flash("info", "User Account has been activated");
             response.redirect("/users/" + request.params.id);
         }
