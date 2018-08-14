@@ -72,9 +72,9 @@ router.put("/:id", function(request, response) {
             request.body.user.introduction = request.sanitize(request.body.user.introduction);
             request.body.user.introduction = request.body.user.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
         }
+        request.body.user.username = request.body.user.username.toLowerCase();
         User.findByIdAndUpdate(request.params.id, request.body.user, function(err) {
             if (err) {
-                console.log("err.message --->>>" + err.message);
                 if (err.message.includes("E11000")) {
                     return response.render("register", { "error": "This Email has already been registered" });
                 }
@@ -84,7 +84,7 @@ router.put("/:id", function(request, response) {
             }
             else {
                 request.flash("info", "User profile edit was saved");
-                response.redirect("/users/" + request.params.id);
+                response.redirect("/login");
             }
         });
     }
@@ -134,7 +134,7 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                     from: config.email_to_notify,
                     subject: "Your wish came true",
                     text: "Dear " + user.username + "\n\n" + "The card you wished for\n" + card.name + "\n" + "is on its way to you.",
-                    html: "Dear <strong>" + user.username + "</strong><br><br>" + "The card you wished for<br>" +
+                    html: "Dear " + user.username + "<br><br>" + "The card you wished for<br>" +
                         "<a href=" + request.headers.host + "/cards/" + card._id + ">" + card.name + "</a><br>is on its way to you.",
                 };
                 transporter.sendMail(mailOptions, function(err) {
@@ -155,7 +155,7 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                     }
                     else {
                         user.wishesCount = user.wishesCount - 1;
-                        var sent = { sentDate: new Date(), pCard: card };
+                        var sent = { sentDate: new Date(), sentCardName: card.name, pCard: card };
                         user.sentCards.push(sent);
                         user.sentCardsCount = user.sentCardsCount + 1;
                         user.save();
@@ -204,7 +204,7 @@ router.get("/:id/wishes/:card_id/delete", function(request, response) {
 router.get("/:id/sentCard/:card_id/delete", function(request, response) {
     if (request.user.isAdmin) {
         var cardID = mongoose.mongo.ObjectID(request.params.card_id);
-        User.findByIdAndUpdate(request.params.id, { $pull: { "sentCards": { "pCard": cardID } } }, { 'new': true }, function(err, user) {
+        User.findByIdAndUpdate(request.params.id, { $pull: { "sentCards": { "_id": cardID } } }, { 'new': true }, function(err, user) {
             if (err) {
                 console.log(err);
                 response.render("someError");
@@ -232,5 +232,21 @@ router.get("/:id/delete", middleware.adminPermissions, function(request, respons
         }
     });
 });
+
+// ACTIVATE User Account
+router.get("/:id/active", middleware.adminPermissions, function(request, response) {
+    User.findByIdAndUpdate(request.params.id, { $set: { "active": "true" } }, function(err) {
+        if (err) {
+            console.log(err);
+            response.render("someError");
+        }
+        else {
+            console.log("User Account has been activated");
+            request.flash("info", "User Account has been activated");
+            response.redirect("/users/" + request.params.id);
+        }
+    });
+});
+
 
 module.exports = router;

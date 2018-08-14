@@ -74,4 +74,9 @@ middlewareObj.adminPermissions = function(request, response, next) {
     }
 };
 
+middlewareObj.usernameToLowerCase = function(req, res, next) {
+    req.body.username = req.body.username.toLowerCase();
+    next();
+}
+
 module.exports = middlewareObj;

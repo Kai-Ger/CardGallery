@@ -4,6 +4,7 @@ var multer = require("multer");
 var async = require("async");
 var Card = require("../models/card");
 var User = require("../models/user");
+var Comment = require("../models/comment");
 var middleware = require("../middleware");
 var mongoose = require("mongoose");
 var nodemailer = require("nodemailer");
@@ -272,11 +273,33 @@ router.put("/:id", middleware.adminPermissions, upload.single("image"), function
 router.get("/:id/delete", middleware.adminPermissions, function(request, response, next) {
     console.log("im in delete route");
     async.waterfall([
-        function(done) {
+        function(callback) {
             cloudDelete(request.params.id);
-            done();
+            callback();
         },
-        function(done) {
+        function(callback) {
+            // Get all comment from this card 
+            Card.findById(request.params.id, function(err, foundCard) {
+                var commentsArr = [];
+                foundCard.comments.forEach(function(comment) {
+                    commentsArr.push(comment._id);
+                });
+                callback(err, commentsArr);
+            });
+        },
+        function(commentsArr, callback) {
+            commentsArr.forEach(function(comm) {
+                Comment.findByIdAndRemove(comm, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                        return response.render("someError");
+                    }
+                });
+            });
+            callback(null);
+        },
+        function(callback) {
             // Delete card from db  
             Card.findByIdAndRemove(request.params.id, function(err, foundCard) {
                 if (err || !foundCard) {
@@ -284,10 +307,58 @@ router.get("/:id/delete", middleware.adminPermissions, function(request, respons
                     return response.render("someError");
                 }
                 else {
-                    done(err);
+                    callback(err);
                 }
             });
-        }
+        },
+        function(callback) {
+            // Get array of all users
+            User.find({}, function(err, users) {
+                if (err) {
+                    console.log(err);
+                    return response.render("someError");
+                }
+                else {
+                    callback(err, users);
+                }
+            });
+        },
+        function(users, callback) {
+            //delete card from all users 
+            users.forEach(function(user) {
+                //from Wishlist
+                user.wishes.forEach(function(wishes) {
+                    if (wishes._id.equals(request.params.id)) {
+                        User.findByIdAndUpdate(user._id, { $pull: { "wishes": wishes._id } }, function(err, user) {
+                            if (err) {
+                                console.log(err);
+                                response.render("someError");
+                            }
+                            else {
+                                user.wishesCount = user.wishesCount - 1;
+                                user.save();
+                                console.log("wish " + request.params.id + " was removed from " + user.username);
+                            }
+                        });
+                    }
+                });
+                //from Sentlist
+                user.sentCards.forEach(function(sCard) {
+                    if (sCard.pCard._id.equals(request.params.id)) {
+                        User.findByIdAndUpdate(user._id, { $pull: { "sentCards": { "pCard": sCard._id } } }, function(err, user) {
+                            if (err) {
+                                console.log(err);
+                                response.render("someError");
+                            }
+                            else {
+                                console.log("sent card " + request.params.id + " was removed from " + user.username);
+                            }
+                        });
+                    }
+                });
+            });
+            callback(null);
+        },
     ], function(err) {
         if (err) return next(err);
         response.redirect("/cards");
@@ -333,7 +404,7 @@ function emailToAdmin(user, card, request) {
         from: config.email_to_notify,
         subject: "User added a new card to the Wishlist",
         text: "User " + user.username + " has added a new card\n" + card.name + "\n to the Wishlist.",
-        html: "User <a href=" + request.headers.host + "/users/" + user._id + ">" + user.username + "</a> has added a new card <a href=" + request.headers.host + "/cards/" + card._id + ">" + card.name + " to the Wishlist.",
+        html: "User " + user.username + " has added a new card <a href=" + request.headers.host + "/cards/" + card._id + ">" + card.name + " to the Wishlist.",
 
     };
     transporter.sendMail(mailOptions, function(err) {

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-        <!-- Bootstrap JS CDN -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> 
-      <link rel="stylesheet" href="/stylesheets/main.css">
+    <!-- Bootstrap JS CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> 
+    <link rel="stylesheet" href="/stylesheets/main.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@ $(document).ready(function(){
       <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
         <div class="container">
         <!-- Brand/logo -->
-        <a class="navbar-brand" href="/">PostCards</a>
+        <a class="navbar-brand nav-link" href="/cards">PostCards</a>
         
         <!-- Hamburger button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,9 +40,6 @@ $(document).ready(function(){
         <!-- Links -->
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
           <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <a class="nav-link <%= typeof page !== 'undefined' && page === 'cards' ? 'active' : '' %>"  href="/cards">Home</a>
-              </li>
               <li class="nav-item">            
                 <form action="/cards" method="GET" class="form-inline ">
                   <% if (typeof search === "undefined" || !search ) { %> 
@@ -66,7 +63,7 @@ $(document).ready(function(){
             <% } else { %>
               <% if (currentUser.isAdmin) { %>
                 <li class="nav-item">
-                  <a class="nav-link" href="/users/<%= currentUser.id %>" style="color:#fff"><%= currentUser.username %></a>
+                  <a class="nav-link" href="/users/<%= currentUser.id %>" style="color:#fff; text-transform: capitalize;"><%= currentUser.username %></a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link <%= typeof page !== 'undefined' && page === 'cards/new' ? 'active' : '' %>" href="/cards/new">Add Card</a>
@@ -76,7 +73,7 @@ $(document).ready(function(){
                 </li>
                 <% } else { %>
                   <li class="nav-item">
-                    <a class="nav-link" href="/users/<%= currentUser.id %>"><%= currentUser.username %></a>
+                    <a class="nav-link" href="/users/<%= currentUser.id %>" style="text-transform: capitalize"><%= currentUser.username %></a>
                   </li>  
                 <% } %>  
                 <li class="nav-item">

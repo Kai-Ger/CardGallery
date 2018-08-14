@@ -6,6 +6,11 @@
     <div>
         <a class="btn btn-outline-info" href="/users/<%= user._id %>/edit">Edit user profile</a>
         <% if (currentUser && currentUser.isAdmin) { %>
+            <% if (user.active) { %>
+                <span id="active" class="btn btn-outline-warning">User is active</span>
+            <% } else {%>
+                <a class="btn btn-warning" href="/users/<%= user._id %>/active" >Activate user account</a>
+            <% } %>
             <button class="btn btn-sm btn-outline-danger" data-href="/users/<%= user._id %>/delete" data-toggle="modal" data-target="#confirm-delete">Delete user</button>
         <% } %>
     </div>
@@ -37,11 +42,15 @@
         <ul class="list-group" style="padding-bottom:10px; ">  
             <% user.sentCards.forEach(function(sent) { %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="/cards/<%= sent.pCard._id %>"><%= sent.pCard.name %></a>
+                <% if(sent.pCard) { %>
+                    <a href="/cards/<%= sent.pCard._id %>"><%= sent.sentCardName %></a>
+                <% } else { %>
+                    <%= sent.sentCardName %>
+                <% } %>
                 <div class="d-flex flex-row-end" >
                     <h4><span class="badge badge-secondary" style="margin: 0 5px 0;">Sent on <%= sent.sentDate.toDateString() %></span></h4>    
                     <% if (currentUser && currentUser.isAdmin) { %>
-                        <button class="btn btn-sm btn-danger" data-href="/users/<%= user._id %>/sentCard/<%= sent.pCard._id %>/delete" data-toggle="modal" data-target="#confirm-delete" >Delete</button>
+                        <button class="btn btn-sm btn-danger" data-href="/users/<%= user._id %>/sentCard/<%= sent._id %>/delete" data-toggle="modal" data-target="#confirm-delete" >Delete</button>
                     <% } %>
                 </div>
             <% }); %>    

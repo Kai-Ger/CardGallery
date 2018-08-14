@@ -22,6 +22,7 @@ var UserSchema = new mongoose.Schema({
         sentCardsCount: { type: Number, default: 0 },
         sentCards: [{
                 sentDate: { type: Date, default: Date.now },
+                sentCardName: String,
                 pCard: {
                         type: mongoose.Schema.Types.ObjectId,
                         ref: "Card"

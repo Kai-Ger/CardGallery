@@ -5,6 +5,7 @@ var nodemailer = require("nodemailer");
 var crypto = require("crypto");
 var passport = require("passport");
 var async = require("async");
+var middleware = require("../middleware");
 
 var config = require("../config");
 
@@ -20,7 +21,7 @@ router.get("/register", function(request, response) {
 });
 
 // CREATE USER - add new user to dataBase
-router.post("/register", function(request, response) {
+router.post("/register", middleware.usernameToLowerCase, function(request, response) {
     async.waterfall([
         function(callback) {
             crypto.randomBytes(20, function(err, buf) {
@@ -130,7 +131,7 @@ router.get("/login", function(request, response) {
 });
 
 // LOGIN - Handle login
-router.post("/login", passport.authenticate("local", {
+router.post("/login", middleware.usernameToLowerCase, passport.authenticate("local", {
     successRedirect: "/cards",
     successFlash: "Welcome back!",
     failureRedirect: "/login",
@@ -282,12 +283,13 @@ router.post("/reset/:token", function(request, response) {
             });
             var mailOptions = {
                 to: user.email,
-                from: "yuuyuuuki@gmail.com",
+                from: config.email_to_notify,
                 subject: "Your password has been changed",
                 text: "Dear " + user.username + "\n\n" +
-                    "This is a confirmation that the password for your account " + user.email + " has just been changed.\n",
-                html: "Dear <strong>" + user.username + "</strong><br><br>" + "This is a confirmation that the password for your account " +
-                    "<a href=" + request.headers.host + "/users/" + user._id + ">" + user.username + "</a> has just been changed.",
+                    "This is a confirmation that the password for your account at PostCards has just been changed.\n",
+                html: "Dear " + user.username + "<br><br>" +
+                    "This is a confirmation that the password for your account at " +
+                    "<a href=" + request.headers.host + ">PostCards</a> has just been changed.",
             };
             transporter.sendMail(mailOptions, function(err) {
                 console.log("confirmation email sent");

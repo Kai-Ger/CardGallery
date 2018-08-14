@@ -94,3 +94,9 @@
 .btn-sm {
     height: 30px;
 }
+
+#active:hover {
+    color: #ffc107;
+    background-color: transparent;
+    border-color: #ffc107;
+}
