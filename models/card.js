@@ -9,6 +9,7 @@ var cardSchema = new mongoose.Schema({
     },
     description: String,
     amount: { type: Number, default: 0 },
+    additionDate: { type: Date, default: Date.now },
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,

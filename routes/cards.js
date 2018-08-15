@@ -36,12 +36,30 @@ cloudinary.config({
 
 // INDEX - display all grounds
 router.get("/", function(request, response) {
+    var sortBy = { additionDate: 'desc' };
+    // switch sort options
+    switch (request.query.sort) {
+        case "date-asc":
+            sortBy = { additionDate: 'asc' };
+            break;
+        case "date-desc":
+            sortBy = { additionDate: 'desc' };
+            break;
+        case "name-asc":
+            sortBy = { name: 'asc' };
+            break;
+        case "name-desc":
+            sortBy = { name: 'desc' };
+            break;
+        default:
+            sortBy = { additionDate: 'desc' };
+    }
     var perPage = 9;
     var pageQuery = parseInt(request.query.page);
     var pageNumber = pageQuery ? pageQuery : 1;
     if (request.query.search) {
         const regex = new RegExp(escapeRegex(request.query.search), "gi");
-        Card.find({ name: regex }).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
+        Card.find({ name: regex }).sort(sortBy).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
             if (err) {
                 console.log(err);
                 response.render("someError");
@@ -63,6 +81,7 @@ router.get("/", function(request, response) {
                             noMatch: noMatch,
                             pages: Math.ceil(count / perPage),
                             search: request.query.search,
+                            sorted: request.query.sort,
                             page: 'cards'
                         });
                     }
@@ -71,7 +90,7 @@ router.get("/", function(request, response) {
         });
     }
     else {
-        Card.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
+        Card.find({}).sort(sortBy).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
             if (err) {
                 console.log(err);
                 response.render("someError");
@@ -87,6 +106,7 @@ router.get("/", function(request, response) {
                             cards: allCards,
                             current: pageNumber,
                             pages: Math.ceil(count / perPage),
+                            sorted: request.query.sort,
                             noMatch: false,
                             page: 'cards',
                             search: false
