@@ -11,7 +11,8 @@ var config = {
     "cloudinary_cloud_name": "",
     "cloudinary_api_key": "",
     "cloudinary_api_secret": "",
-    "mongoDBurl": ""
+    "mongoDBurl": "",
+    "domainName": ""
 
 };
 

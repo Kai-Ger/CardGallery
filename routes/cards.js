@@ -241,7 +241,7 @@ router.post("/:card_id/wish", middleware.isLoggedIn, function(request, response)
                         user.save();
                         request.flash("info", "Your wish was added successfully");
                         response.redirect("/cards/" + card._id);
-                        emailToAdmin(user, card, request);
+                        emailToAdmin(user, card);
                     }
                 });
             }
@@ -399,7 +399,7 @@ function cloudDelete(id) {
 }
 
 // Sent Email Notification to admin
-function emailToAdmin(user, card, request) {
+function emailToAdmin(user, card) {
     var transporter = nodemailer.createTransport({
         service: "Gmail",
         host: 'smtp.gmail.com',
@@ -414,7 +414,7 @@ function emailToAdmin(user, card, request) {
         from: config.email_to_notify,
         subject: "User added a new card to the Wishlist",
         text: "User " + user.username + " has added a new card\n" + card.name + "\n to the Wishlist.",
-        html: "User " + user.username + " has added a new card <a href=" + request.headers.host + "/cards/" + card._id + ">" + card.name + " to the Wishlist.",
+        html: "User " + user.username + " has added a new card <a href=" + config.domainName + "/cards/" + card._id + ">" + card.name + " to the Wishlist.",
 
     };
     transporter.sendMail(mailOptions, function(err) {

@@ -130,7 +130,7 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                     subject: "Your wish came true",
                     text: "Dear " + user.username + "\n\n" + "The card you wished for\n" + card.name + "\n" + "is on its way to you.",
                     html: "Dear " + user.username + "<br><br>" + "The card you wished for<br>" +
-                        "<a href=" + request.headers.host + "/cards/" + card._id + ">" + card.name + "</a><br>is on its way to you.",
+                        "<a href=" + config.domainName + "/cards/" + card._id + ">" + card.name + "</a><br>is on its way to you.",
                 };
                 transporter.sendMail(mailOptions, function(err) {
                     if (!err) {

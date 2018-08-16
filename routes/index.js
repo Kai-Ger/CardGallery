@@ -74,7 +74,7 @@ router.post("/register", middleware.usernameToLowerCase, function(request, respo
                 subject: "Welcome to CardGallery",
                 text: "Dear " + user.username + "\n\n" +
                     "Thanks for joining CardGallery. To complete your registration, please follow this link:\n\n " +
-                    "http://" + request.headers.host + "/register/" + user.activateAccountToken + "\n\n" +
+                    config.domainName + "/register/" + user.activateAccountToken + "\n\n" +
                     "If you did not request this registration, please ignore this email.\n\n" +
                     "Thank you!"
             };
@@ -191,7 +191,7 @@ router.post("/forgot", function(request, response) {
                 subject: "Reset your password",
                 text: "Dear " + user.username + "\n\n" +
                     "You recently asked to reset your password. To complete your request, please follow this link:\n\n " +
-                    "http://" + request.headers.host + "/reset/" + token + "\n\n" +
+                    config.domainName + "/reset/" + token + "\n\n" +
                     "If you did not request this change, please ignore this email and your password will remail unchanged.\n"
             };
             transporter.sendMail(mailOptions, function(err) {
@@ -282,7 +282,7 @@ router.post("/reset/:token", function(request, response) {
                     "This is a confirmation that the password for your account at PostCards has just been changed.\n",
                 html: "Dear " + user.username + "<br><br>" +
                     "This is a confirmation that the password for your account at " +
-                    "<a href=" + request.headers.host + ">PostCards</a> has just been changed.",
+                    "<a href=" + config.domainName + ">PostCards</a> has just been changed.",
             };
             transporter.sendMail(mailOptions, function(err) {
                 console.log("confirmation email sent");
