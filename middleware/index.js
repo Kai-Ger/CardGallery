@@ -56,8 +56,8 @@ middlewareObj.isLoggedIn = function(request, response, next) {
         console.log("isAuthenticated");
         return next();
     }
-    request.flash("error", "You need to be logged in to proceed");
-    response.redirect("/login");
+    request.flash("error", "Already a user? Please login");
+    response.redirect("back");
 };
 
 // Confirm that user has admin permissions
@@ -65,18 +65,16 @@ middlewareObj.adminPermissions = function(request, response, next) {
     if (request.isAuthenticated()) {
         if (request.user.isAdmin) {
             console.log("Admin confirmed");
-            next();
-        }
-        else {
-            request.flash("error", "You need to have Admin permissions in order to proceed");
-            response.redirect("back");
+            return next();
         }
     }
+    request.flash("error", "You need to have Admin permissions in order to proceed");
+    response.redirect("/cards");
 };
 
-middlewareObj.usernameToLowerCase = function(req, res, next) {
-    req.body.username = req.body.username.toLowerCase();
+middlewareObj.usernameToLowerCase = function(request, response, next) {
+    request.body.username = request.body.username.toLowerCase();
     next();
-}
+};
 
 module.exports = middlewareObj;

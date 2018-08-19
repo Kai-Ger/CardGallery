@@ -46,7 +46,7 @@ router.get("/:id", function(request, response) {
     }
     else {
         if (!request.user.active) {
-            request.flash("error", "User should complete email confirmation order to proceed");
+            request.flash("error", "Please complete email confirmation in order to proceed");
             response.redirect("back");
         }
     }
@@ -68,7 +68,7 @@ router.get("/:id/edit", function(request, response) {
 // UPDATE USER
 router.put("/:id", function(request, response) {
     if (request.user._id.equals(request.params.id) || request.user.isAdmin) {
-        if (request.body.introduction) {
+        if (request.body.user.introduction) {
             request.body.user.introduction = request.sanitize(request.body.user.introduction);
             request.body.user.introduction = request.body.user.introduction.replace(/(?:\r\n|\r|\n)/g, '<br>');
         }
@@ -76,15 +76,22 @@ router.put("/:id", function(request, response) {
         User.findByIdAndUpdate(request.params.id, request.body.user, function(err) {
             if (err) {
                 if (err.message.includes("E11000")) {
-                    return response.render("register", { "error": "This Email has already been registered" });
+                    request.flash("error", "This Email has already been registered");
+                    return response.redirect("back");
                 }
                 else {
-                    return response.render("register", { "error": err.message });
+                    request.flash("error", err.message);
+                    return response.redirect("back");
                 }
             }
             else {
                 request.flash("info", "User profile edit was saved");
-                response.redirect("/logout");
+                if (request.user.isAdmin) {
+                    response.redirect("/users/" + request.params.id);
+                }
+                else {
+                    response.redirect("/logout");
+                }
             }
         });
     }
@@ -135,7 +142,7 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                 transporter.sendMail(mailOptions, function(err) {
                     if (!err) {
                         console.log("confirmation email sent");
-                        request.flash("success", "Confirmation email was sent to user " + user.email);
+                        request.flash("success", "Confirmation email has been sent to user " + user.email);
                     }
                 });
                 callback(err, card, user);
@@ -149,10 +156,8 @@ router.post("/:id/sent/:card_id", middleware.adminPermissions, function(request,
                         console.log(err);
                     }
                     else {
-                        user.wishesCount = user.wishesCount - 1;
                         var sent = { sentDate: new Date(), sentCardName: card.name, pCard: card };
                         user.sentCards.push(sent);
-                        user.sentCardsCount = user.sentCardsCount + 1;
                         user.save();
                     }
                     callback(err);
@@ -186,9 +191,8 @@ router.get("/:id/wishes/:card_id/delete", function(request, response) {
                 response.render("someError");
             }
             else {
-                user.wishesCount = user.wishesCount - 1;
                 user.save();
-                request.flash("info", "Your wish was removed successfully");
+                request.flash("info", "Your wish has been removed successfully");
                 response.redirect("/users/" + request.params.id);
             }
         });
@@ -205,9 +209,8 @@ router.get("/:id/sentCard/:card_id/delete", function(request, response) {
                 response.render("someError");
             }
             else {
-                user.sentCardsCount = user.sentCardsCount - 1;
                 user.save();
-                request.flash("info", "Sent card record was removed successfully");
+                request.flash("info", "Sent card record has been removed successfully");
                 response.redirect("/users/" + request.params.id);
             }
         });
@@ -222,7 +225,7 @@ router.get("/:id/delete", middleware.adminPermissions, function(request, respons
             response.render("someError");
         }
         else {
-            request.flash("info", "User was deleted");
+            request.flash("info", "User has been deleted");
             response.redirect("/users");
         }
     });

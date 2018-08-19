@@ -31,7 +31,7 @@
           <tr class="clickable-row" data-href="users/<%= user._id %>">
               <th scope="row"><%= index %></th>
               <td><%= user.username %></td>
-              <td><%= user.wishesCount %></td>
+              <td><%= user.wishes.length %></td>
               <td><%= user.email %></td>
           </tr>
      <% }); %>

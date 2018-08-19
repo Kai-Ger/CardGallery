@@ -11,12 +11,12 @@
             <% } else {%>
                 <a class="btn btn-warning" href="/users/<%= user._id %>/active" >Activate user account</a>
             <% } %>
-            <button class="btn btn-sm btn-outline-danger" data-href="/users/<%= user._id %>/delete" data-toggle="modal" data-target="#confirm-delete">Delete user</button>
+            <button class="btn btn-outline-danger" data-href="/users/<%= user._id %>/delete" data-toggle="modal" data-target="#confirm-delete">Delete user</button>
         <% } %>
     </div>
     <p style="margin-top: 15px"><%- user.introduction %></p>
     <h4>Wishlist</h4>
-    <% if(user.wishesCount > 0){ %>
+    <% if(user.wishes.length > 0){ %>
         <ul class="list-group" style="padding-bottom:10px; ">  
             <% user.wishes.forEach(function(wish) { %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -38,12 +38,12 @@
     <% } %>
     <hr>
     <h4>Sent cards</h4>
-    <% if(user.sentCardsCount > 0){ %>
+    <% if(user.sentCards.length > 0){ %>
         <ul class="list-group" style="padding-bottom:10px; ">  
             <% user.sentCards.forEach(function(sent) { %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <% if(sent.pCard) { %>
-                    <a href="/cards/<%= sent.pCard._id %>"><%= sent.sentCardName %></a>
+                    <a href="/cards/<%= sent.pCard._id %>"><%= sent.pCard.name %></a>
                 <% } else { %>
                     <%= sent.sentCardName %>
                 <% } %>

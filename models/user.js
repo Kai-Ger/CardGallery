@@ -12,14 +12,12 @@ var UserSchema = new mongoose.Schema({
         active: { type: Boolean, default: false }, // active=false until email is confirmed
         activateAccountToken: String,
         isAdmin: { type: Boolean, default: false },
-        wishesCount: { type: Number, default: 0 },
         wishes: [
                 {
                         type: mongoose.Schema.Types.ObjectId,
                         ref: "Card"
         }
     ],
-        sentCardsCount: { type: Number, default: 0 },
         sentCards: [{
                 sentDate: { type: Date, default: Date.now },
                 sentCardName: String,

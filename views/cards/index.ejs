@@ -22,10 +22,10 @@
           <%= sortBtnValue %>
       </button>
       <div class="dropdown-menu dropdown-menu-right">
-         <a class="dropdown-item" href="/cards?sort=date-desc">Date - Newest first</a>
-         <a class="dropdown-item" href="/cards?sort=date-asc">Date - Oldest first</a>
-         <a class="dropdown-item" href="/cards?sort=name-asc">Name - A to Z</a>
-         <a class="dropdown-item" href="/cards?sort=name-desc">Name - Z to A</a>
+         <a class="dropdown-item active-sort" href="/cards?page=1&sort=date-desc">Date - Newest first</a>
+         <a class="dropdown-item active-sort" href="/cards?page=1&sort=date-asc">Date - Oldest first</a>
+         <a class="dropdown-item active-sort" href="/cards?page=1&sort=name-asc">Name - A to Z</a>
+         <a class="dropdown-item active-sort" href="/cards?page=1&sort=name-desc">Name - Z to A</a>
          <div class="dropdown-divider"></div>
          <a class="dropdown-item" href="/cards">Clear sort</a>
       </div>
@@ -51,12 +51,12 @@
          <% if (current == 1) { %>
          <li class="page-item disabled"><a class="page-link">First</a></li>
          <% } else { %>
-         <li class="page-item"><a class="page-link active-link" href="/cards?page=1">First</a></li>
+         <li class="page-item"><a class="page-link active-page" href="/cards?page=1">First</a></li>
          <% } %>
          <% if (current == 1) { %>
          <li class="page-item disabled"><a class="page-link"> « </a></li>
          <% } else { %>
-         <li class="page-item"><a class="page-link active-link" href="/cards?page=<%= Number(current) - 1 %>">«</a></li>
+         <li class="page-item"><a class="page-link active-page" href="/cards?page=<%= Number(current) - 1 %>">«</a></li>
          <% } %>
          <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
          <% if (i !== 1) { %>
@@ -66,7 +66,7 @@
          <% if (i == current) { %>
          <li class="page-item active"><a class="page-link"><%= i %></a></li>
          <% } else { %>
-         <li class="page-item"><a class="page-link active-link" href="/cards?page=<%= i %>"><%= i %></a></li>
+         <li class="page-item"><a class="page-link active-page" href="/cards?page=<%= i %>"><%= i %></a></li>
          <% } %>
          <% if (i == Number(current) + 4 && i < pages) { %>
          <li class="page-item disabled"><a class="page-link">...</a></li>
@@ -75,42 +75,47 @@
          <% if (current == pages) { %>
          <li class="page-item disabled"><a class="page-link"> » </a></li>
          <% } else { %>
-         <li class="page-item"><a class="page-link active-link" href="/cards?page=<%= Number(current) + 1 %>">»</a></li>
+         <li class="page-item"><a class="page-link active-page" href="/cards?page=<%= Number(current) + 1 %>">»</a></li>
          <% } %>
          <% if (current == pages) { %>
          <li class="page-item disabled"><a class="page-link">Last</a></li>
          <% } else { %>
-         <li class="page-item"><a class="page-link active-link" href="/cards?page=<%= pages %>">Last</a></li>
+         <li class="page-item"><a class="page-link active-page" href="/cards?page=<%= pages %>">Last</a></li>
          <% } %>
       </ul>
       <% } %>
    </div>
 </div>
+<br>
 
 <script>
-    $('.active-link').each(function(i, el){
+    $('.active-page').each(function(i, el){
         var param = window.location.search.substring(1);
         var sort = "";
         var search = "";
-        console.log("param -> " + param);
         if (param.indexOf("sort") != -1){
-            if (search.indexOf("search") != -1){
-                sort = "&" + param.slice(param.indexOf("sort"), param.indexOf("&")+1);
-                console.log("sort -> " + sort);
-            } else {
-                sort = "&" + param.slice(param.indexOf("sort"));
-                console.log("sort -> " + sort);
-            }
-        }     
+             sort = "&" + param.slice(param.indexOf("sort"));
+        } else {  
+            if (param.indexOf("search") != -1) {
+                search = "&" + param.slice(param.indexOf("search") );
+             }    
+        }
+        $(this).attr({
+            href: $(this).attr("href") + search + sort
+        });
+    });  
+    
+    $('.active-sort').each(function(i, el){
+        var param = window.location.search.substring(1);
+        var search = "";
         if (param.indexOf("search") != -1) {
             search = "&" + param.slice(param.indexOf("search") );
-            console.log("search -> " + search);
-        }    
-        
+         }    
         $(this).attr({
-            href: $(this).attr("href") + sort + search
+            href: $(this).attr("href")  + search
         });
-    });    
+    });  
+
 </script>
 
 <% include ../layout/footer %>

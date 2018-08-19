@@ -37,16 +37,16 @@
 </div> 
 <div class="container" >
    <!-- COMMENT SECTION -->
-   <div class="card card-body">
+   <div id="comments-section" class="card card-body">
       <div>
          <% if (currentUser && currentUser.active != true) { %>
             <p class="float-right"><em>Please complete your registration in order to comment</em></p>
          <% } else { %>
             <a class="btn btn-outline-success float-right"  role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
+            <i class="fa fa-plus"></i> 
+            Add new comment
+            </a>
          <% } %>
-         <i class="fa fa-plus"></i> 
-         Add new comment
-         </a>
          <h4><strong>Comments <i class="fa fa-comment" aria-hidden="true"></i></strong></h4>
       </div>
       <!--Collapsable Add a comment form START-->
@@ -60,7 +60,7 @@
             <h4>Write your comment <i class="fa fa-pencil-alt" aria-hidden="true"></i></h4>
             <form id="add-comment-form" action="/cards/<%= card._id %>/comments" method="POST">
                <div class="form-group">
-                  <input class="form-control" type="text" disabled value="<%= currentUser.username %>">
+                  <input class="form-control capitalize" type="text" disabled value="<%= currentUser.username %>">
                </div>
                <div class="form-group">
                   <textarea class="form-control" name="comment[text]" placeholder="Write your comment..." form="add-comment-form" rows="5" cols="70"></textarea>
@@ -79,7 +79,7 @@
       <em style="color: grey;">Be the first to comment</em>
       <% } %>
       <!--Display comments by looping through them-->
-      <% card.comments.forEach(function(comment){ %>
+      <% card.comments.slice().reverse().forEach(function(comment){ %>
       <div class="row">
          <div class="col-md-12">
             <strong>
@@ -91,7 +91,7 @@
                <i class="fas fa-user" aria-hidden="true"></i>
                <% } %>
                <!--Print out the author username-->
-               <%= comment.author.username %>
+               <span class="capitalize"><%= comment.author.username %></span>
             </strong>
             <!--Show when the comment was made-->
             <span class="float-right"><%= moment(comment.createdAt).fromNow() %></span>
@@ -117,19 +117,18 @@
                         <textarea class="form-control" name="comment[text]"  form="edit-comment-form<%= comment._id %>" rows="5" cols="70"><%- comment.text.replace(/<br\s*\/?>/gi,"\n") %></textarea>
                      </div>
                      <div class="form-group">
-                        <button class="btn btn-warning btn-sm">Edit comment <i class="fa fa-comment" aria-hidden="true"></i></button>
+                        <button class="btn btn-warning btn-sm">Save <i class="fa fa-comment" aria-hidden="true"></i></button>
                      </div>
                   </form>
                </div>
             </div>
             <% } %>
+            <hr>
          </div>
       </div>
       <% }); %>
-      <hr>
    </div>
    <!--COMMENT SECTION END-->
 </div>
-
 
 <% include ../layout/footer %>

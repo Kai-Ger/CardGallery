@@ -59,7 +59,7 @@ router.get("/", function(request, response) {
     var pageNumber = pageQuery ? pageQuery : 1;
     if (request.query.search) {
         const regex = new RegExp(escapeRegex(request.query.search), "gi");
-        Card.find({ name: regex }).sort(sortBy).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
+        Card.find({ name: regex }).collation({ locale: 'en', strength: 2 }).sort(sortBy).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
             if (err) {
                 console.log(err);
                 response.render("someError");
@@ -90,7 +90,7 @@ router.get("/", function(request, response) {
         });
     }
     else {
-        Card.find({}).sort(sortBy).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
+        Card.find({}).collation({ locale: 'en', strength: 2 }).sort(sortBy).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCards) {
             if (err) {
                 console.log(err);
                 response.render("someError");
@@ -220,7 +220,7 @@ router.get("/:id/edit", middleware.adminPermissions, function(request, response)
 // ADD CARD to wishlist
 router.post("/:card_id/wish", middleware.isLoggedIn, function(request, response) {
     if (!request.user.active) {
-        request.flash("error", "User should complete email confirmation order to proceed");
+        request.flash("error", "Please complete email confirmation in order to proceed");
         response.redirect("back");
     }
     else {
@@ -237,7 +237,6 @@ router.post("/:card_id/wish", middleware.isLoggedIn, function(request, response)
                     }
                     else {
                         user.wishes.push(card);
-                        user.wishesCount = user.wishesCount + 1;
                         user.save();
                         request.flash("info", "Your wish was added successfully");
                         response.redirect("/cards/" + card._id);
@@ -353,7 +352,6 @@ router.get("/:id/delete", middleware.adminPermissions, function(request, respons
                                 response.render("someError");
                             }
                             else {
-                                user.wishesCount = user.wishesCount - 1;
                                 user.save();
                             }
                         });

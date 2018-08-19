@@ -1,3 +1,7 @@
+body {
+    min-height: 100vh;
+}
+
 .navbar-dark .navbar-nav .nav-link.disabled {
     color: #fff;
 }
@@ -6,7 +10,19 @@
     padding: 0;
 }
 
-/* Cards Index -  Pinterestr-like styling */
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 0;
+    background-color: #343a40!important;
+    color: white;
+    text-align: center;
+    z-index: 1;
+}
+
+/* Cards Index -  Pinterest-like styling */
 
 #columns {
     column-width: 320px;
@@ -97,4 +113,18 @@
 
 .disable-btn {
     pointer-events: none;
+}
+
+#comments-section {
+    margin-bottom: 40px;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+/* user table hover */
+
+.table-hover tbody tr:hover {
+    background-color: #007bff;
 }
