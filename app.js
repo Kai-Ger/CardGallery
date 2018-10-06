@@ -64,6 +64,8 @@ app.use(function(err, request, response, next) {
     response.status(500).redirect("/500");
 });
 
-app.listen(process.env.PORT, process.env.IP, function() {
+//app.listen(process.env.PORT, process.env.IP, function() {
+app.listen(80, "172.31.19.192", function() {
+
     console.log("Card Gallery server is up.");
 });
