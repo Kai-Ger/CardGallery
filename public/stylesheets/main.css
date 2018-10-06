@@ -40,7 +40,7 @@ body {
     padding: 15px;
     padding-bottom: 10px;
     display: inline-block;
-    column-break-inside: avoid;
+    break-inside: avoid;
 }
 
 #columns figure img {

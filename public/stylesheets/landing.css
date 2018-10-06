@@ -1,6 +1,6 @@
 body {
-    background-color: #000;
-    background-image: url(https://res.cloudinary.com/dfdbaella/image/upload/v1534745198/avdat-2.jpg);
+    background-color: rgb(246, 114, 114);
+    /* background-image: url(https://res.cloudinary.com/dfdbaella/image/upload/v1534745198/avdat-2.jpg); */
     background-position: center top;
     background-repeat: no-repeat;
 }
