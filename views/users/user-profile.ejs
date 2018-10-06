@@ -34,10 +34,10 @@
             </li>
         </ul>
     <% } else { %>
-        <p>No cards at the moment</p>
+        <p>No wishes at the moment</p>
     <% } %>
     <hr>
-    <h4>Sent cards</h4>
+    <h4>Sent wishes</h4>
     <% if(user.sentCards.length > 0){ %>
         <ul class="list-group" style="padding-bottom:10px; ">  
             <% user.sentCards.forEach(function(sent) { %>
@@ -57,7 +57,7 @@
             </li>
         </ul>
     <% } else { %>
-        <p>No cards were sent yet</p>
+        <p>No wishes were sent yet</p>
     <% } %>
 
 </div>
