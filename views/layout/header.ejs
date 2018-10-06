@@ -43,7 +43,7 @@ $(document).ready(function(){
               <li class="nav-item">            
                 <form action="/cards" method="GET" class="form-inline ">
                   <% if (typeof search === "undefined" || !search ) { %> 
-                    <input type="text" name="search" placeholder="Find card" class="form-control-sm mr-sm-2">
+                    <input type="text" name="search" placeholder="Find wish" class="form-control-sm mr-sm-2">
                   <% } else { %>
                     <input type="text" name="search" value="<%= search %>" class="form-control-sm mr-sm-2">
                   <% } %> 
@@ -66,7 +66,7 @@ $(document).ready(function(){
                   <a class="nav-link capitalize" href="/users/<%= currentUser.id %>" style="color:#fff"><%= currentUser.username %></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link <%= typeof page !== 'undefined' && page === 'cards/new' ? 'active' : '' %>" href="/cards/new">Add Card</a>
+                  <a class="nav-link <%= typeof page !== 'undefined' && page === 'cards/new' ? 'active' : '' %>" href="/cards/new">Add Wish</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link <%= typeof page !== 'undefined' && page === 'users' ? 'active' : '' %>" href="/users">Users</a>
